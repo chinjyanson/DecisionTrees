@@ -4,8 +4,6 @@ class DecisionTree():
         self.left = 
         self.right = 
         self.leaf = False
-        
-        pass
 
 
     # def fit(self, X, y):
