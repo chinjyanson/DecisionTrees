@@ -1,18 +1,17 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+
 class DecisionTree():
     def __init__(self):
-        self.val = 
-        self.left = 
-        self.right = 
+        self.attribute = None 
+        self.val = None
+        self.left = None
+        self.right = None
         self.leaf = False
 
-
-    # def fit(self, X, y):
-    #     pass
-
-    # def predict(self, X):
-    #     pass
-
-    def decision_tree_learning(matrix, depth):
+    def decision_tree_learning(self, train: list[list[int]], depth: int) -> tuple:
         # arguments: Matrix containing data set and depth variable
 
         """
@@ -28,12 +27,38 @@ class DecisionTree():
             end if  
         end procedure
         """
-        pass
+        return ()
 
-    def find_split():
+    def find_split(self, dataset: list[list[int]]) -> tuple:
         """
         This function finds the most optimal/highest information gain
         """
+        pass
+
+    def find_entropy():
+        """
+        This function finds the entropy of the dataset
+        """
+        pass
+
+    def plot_tree(self, ax, x, y, dx, dy):
+        """
+        Recursively plot the decision tree using matplotlib.
+        """
+        if self.leaf:
+            ax.text(x, y, f"Leaf: {self.val}", ha='center', bbox=dict(facecolor='lightgreen', edgecolor='black'))
+        else:
+            ax.text(x, y, f"X{self.attribute} <= {self.val}", ha='center', bbox=dict(facecolor='lightblue', edgecolor='black'))
+            
+            # Recursively plot the left and right branches
+            if self.left:
+                ax.plot([x, x - dx], [y, y - dy], 'k-')  # Draw line to the left child
+                self.left.plot_tree(ax, x - dx, y - dy, dx / 2, dy)  # Plot the left child
+            if self.right:
+                ax.plot([x, x + dx], [y, y - dy], 'k-')  # Draw line to the right child
+                self.right.plot_tree(ax, x + dx, y - dy, dx / 2, dy)  # Plot the right child
+
+    def predict():
         pass
 
 
