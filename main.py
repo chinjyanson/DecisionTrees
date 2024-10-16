@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import utils
 
 
 class DecisionTree():
@@ -29,16 +29,25 @@ class DecisionTree():
         """
         return ()
 
-    def find_split(self, dataset: list[list[int]]) -> tuple:
+    def find_split(self, dataset: list[list[int]]) -> tuple:    #calculate Information Gain
         """
         This function finds the most optimal/highest information gain
         """
         pass
 
-    def find_entropy():
+    def find_entropy(dataset: list[list[int]]):
         """
         This function finds the entropy of the dataset
         """
+        labels =np.array
+        for line in dataset:
+            row = line.strip().split(",")
+            labels.append(row[7])
+        print("labels :")
+        print(labels)
+        unique, counts = np.unique(labels, return_counts=True)
+        # finds percentage of labels throughout given dataset
+        #calculates entropy according to formula
         pass
 
     def plot_tree(self, ax, x, y, dx, dy):
@@ -66,3 +75,7 @@ if __name__ == "__main__":
     dtree = DecisionTree()
     dtree.decision_tree_learning()
     # then visualise it
+
+tree_classifier = DecisionTree()
+dataset = utils.start()
+tree_classifier.find_entropy(dataset)

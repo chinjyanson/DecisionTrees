@@ -15,6 +15,7 @@ def presort(dataset):
     print(sorted_data)
     return sorted_data
 
-if __name__ == "__main__":
+def start():
     data = parse("clean_dataset")
-    presort(data)
+    data = presort(data)
+    return(data)
