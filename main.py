@@ -41,13 +41,15 @@ class DecisionTree():
         """
         labels = []
         for line in dataset:
-            labels.append(line[7])
-        #print("labels :")
-        #print(labels)
+            labels.append(line[-1])
+        
         unique, counts = np.unique(labels, return_counts=True)
-        # finds percentage of labels throughout given dataset
-        #calculates entropy according to formula
-        pass
+        percentages = counts/counts.sum()
+
+        entropy_array = -percentages*np.log2(percentages)
+        entropy = entropy_array.sum()
+        print(entropy)
+        return entropy
 
     def plot_tree(self, ax, x, y, dx, dy):
         """

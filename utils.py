@@ -1,12 +1,22 @@
 import numpy as np
 
-def parse(dataset_file_name):
-    """
-    Parse the txt file into wifi components
-    """
-    line = np.loadtxt(f"/Users/tianqi/Desktop/intro2ML/DecisionTrees/wifi_db/{dataset_file_name}.txt", delimiter='\t')
-    return line
-    
+# def parse(dataset_file_name):
+#     """
+#     Parse the txt file into wifi components
+#     """
+#     line = np.loadtxt(f"wifi_db/{dataset_file_name}.txt", delimiter='\t')
+#     return line
+def parse(filepath):
+    x = []
+    y_labels = []
+    for line in open(filepath):
+        if line.strip() != "":
+            row = line.strip().split(",")
+            # Convert the row elements to floats
+            float_row = list(map(float, row))
+            x.append(float_row)
+    x = np.array(x)
+
 def presort(dataset):
     """
     Presort the data
