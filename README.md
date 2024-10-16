@@ -10,7 +10,7 @@ pip install requirements
 # Members
 | Name                              | CID        | Course |
 |-----------------------------------|------------|--------|
-| Tianqi Hu                         |            | EIE    |
+| Tianqi Hu                         | 02190317   | EIE    |
 | Samuel Khoo                       |            | EIE    |
 | Anson Chin                        | 02194736   | EIE    |
 | Constance Geneau De Lamarliere    | 02209964   | EIE    |
