@@ -31,7 +31,7 @@ class DecisionTree():
         class_labels = [row[-1] for row in train]
 
         # Base case: if all samples have the same label, return a leaf node
-        if (np.size(np.unique(class_labels)) == 1): 
+        if np.size(np.unique(class_labels)) == 1:
             return (class_labels[0], depth)
         
         else:
@@ -129,4 +129,4 @@ tree_classifier = DecisionTree()
 dataset = utils.start()
 
 #print(tree_classifier.find_split(dataset))
-print(tree_classifier.decision_tree_learning(dataset, 3))
+print(tree_classifier.decision_tree_learning(dataset, 1))
