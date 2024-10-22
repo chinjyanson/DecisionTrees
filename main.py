@@ -49,7 +49,7 @@ class DecisionTree():
         """
         This function finds the most optimal/highest information gain
         """
-        best_split = {"attribute": 0, "value": 0, "entropy": 0}
+        best_split = {"attribute": 100, "value": 100, "entropy": 100}
 
         #for loop that sorts wifi1-wifi7, in decreasing value for each wifi (just wifi and room)
         number_attributes = len(dataset[0]) -1
