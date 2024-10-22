@@ -33,7 +33,16 @@ class DecisionTree():
         """
         This function finds the most optimal/highest information gain
         """
-        pass
+        #for loop that sorts wifi1-wifi7, in decreasing value for each wifi (just wifi and room)
+
+        #after sorting, we identify every room change and identify a cut value 
+
+        #we also calculate the weighted average entropy of the produced subsets of each cut
+
+        #then we compare this weighted average entropy to the current minimum value we have. If smaller, store in best_cut tuple = <attribute, value, entropy>
+
+        #we exit the for loop and return this best_cut tuple
+
 
     def find_entropy(self, dataset):
         """
