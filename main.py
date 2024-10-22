@@ -52,19 +52,19 @@ class DecisionTree():
         best_split = {"attribute": 0, "value": 0, "entropy": 0}
 
         #for loop that sorts wifi1-wifi7, in decreasing value for each wifi (just wifi and room)
-        number_attributes = len(dataset) -1
+        number_attributes = len(dataset[0]) -1
         for k in range (number_attributes):
             wifi_table = [[row[k], row[-1]] for row in dataset] #takes wifi column and class column
             wifi_table = sorted(wifi_table, key=lambda x: x[0]) #sorts it in ascending order
 
         #after sorting, we identify every room change and identify a cut value 
-            for i in range(len(wifi_table)):
+            for i in range(len(wifi_table) -1 ):   
                 if (wifi_table[i][1] != wifi_table[i+1][1]):
                     split_value = wifi_table[i][0]
 
         #we also calculate the weighted average entropy of the produced subsets of each cut
-                    entropy_left, count_left = DecisionTree.find_entropy(wifi_table[:i])
-                    entropy_right, count_right = DecisionTree.find_entropy(wifi_table[i:])
+                    entropy_left, count_left = DecisionTree.find_entropy(self, wifi_table[:i])
+                    entropy_right, count_right = DecisionTree.find_entropy(self, wifi_table[i:])
                     total_count = count_left + count_right
                     weighted_entropy = (count_left/total_count)*entropy_left + (count_right/total_count)*entropy_right
 
@@ -106,4 +106,4 @@ class DecisionTree():
 
 tree_classifier = DecisionTree()
 dataset = utils.start()
-tree_classifier.find_entropy(dataset)
+print(tree_classifier.find_split(dataset))
