@@ -22,3 +22,9 @@ pip install requirements
 2) Evaluate CUTS where the room number changes for a specific valu of wifi number. Evaluate and compare to previous entropy and if better, store in the form: best_split = (attribute, value, entropy)
 3) Iterate though all the cuts of this wifi column and only store if better
 4) Once a full wifi has been evaluated and the best split (cut) has been found, move on to the next wifi
+
+Next setps:
+- Optimise code so actually can run the tree
+- Add extra lgoic to simplify: either get rid of some cuts or stops/takes majority when less than 5 samples in a subset
+- Visualise tree
+- Evaluate it
