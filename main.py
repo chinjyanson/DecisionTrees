@@ -11,23 +11,44 @@ class DecisionTree():
         self.right = None
         self.leaf = False
 
-    # def decision_tree_learning(self, train: list[list[int]], depth: int) -> tuple:
-    #     # arguments: Matrix containing data set and depth variable
+    def decision_tree_learning(self, train: list[list[int]], depth: int) -> tuple:
+    # arguments: Matrix containing data set and depth variable
 
-    #     """
-    #     procedure decision tree learning(training dataset, depth)
-    #         if all samples have the same label then
-    #             return (a leaf node with this value, depth)
-    #         else
-    #             split← find split(training dataset)
-    #             node← a new decision tree with root as split value
-    #             l branch, l depth ← DECISION TREE LEARNING(l dataset, depth+1)
-    #             r branch, r depth ← DECISION TREE LEARNING(r dataset, depth+1)
-    #             return (node, max(l depth, r depth))
-    #         end if  
-    #     end procedure
-    #     """
-    #     return ()
+        """
+        procedure decision tree learning(training dataset, depth)
+            if all samples have the same label then
+                return (a leaf node with this value, depth)
+            else
+                split← find split(training dataset)
+                node← a new decision tree with root as split value
+                l branch, l depth ← DECISION TREE LEARNING(l dataset, depth+1)
+                r branch, r depth ← DECISION TREE LEARNING(r dataset, depth+1)
+                return (node, max(l depth, r depth))
+            end if  
+        end procedure
+        """
+
+        class_labels = [row[-1] for row in train]
+
+        # Base case: if all samples have the same label, return a leaf node
+        if (np.size(np.unique(class_labels)) == 1): 
+            return (class_labels[0], depth)
+        
+        else:
+            split = self.find_split(train)  # Find the best attribute and value to split on
+        
+            node = {'attribute': split["attribute"], 'value': split["value"], 'left': None, 'right': None}
+
+            left_table = [row for row in train if row[split["attribute"]] <= split["attribute"]]
+            right_table = [row for row in train if row[split["attribute"]] > split["attribute"]]
+        
+            left_branch, left_depth = self.decision_tree_learning(left_table, depth + 1)
+            right_branch, right_depth = self.decision_tree_learning(right_table, depth + 1)
+        
+            node['left'] = left_branch
+            node['right'] = right_branch
+
+            return (node, max(left_depth, right_depth))
 
     def find_entropy(self, dataset):
         """
@@ -45,7 +66,7 @@ class DecisionTree():
         count = len(labels)
         return entropy, count
 
-    def find_split(self, dataset: list[list[int]]) -> tuple:    #calculate Information Gain
+    def find_split(self, dataset: list[list[int]]):    #calculate Information Gain
         """
         This function finds the most optimal/highest information gain
         """
@@ -106,4 +127,6 @@ class DecisionTree():
 
 tree_classifier = DecisionTree()
 dataset = utils.start()
-print(tree_classifier.find_split(dataset))
+
+#print(tree_classifier.find_split(dataset))
+print(tree_classifier.decision_tree_learning(dataset, 3))
