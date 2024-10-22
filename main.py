@@ -33,9 +33,17 @@ class DecisionTree():
         """
         This function finds the most optimal/highest information gain
         """
+        best_split = []
         #for loop that sorts wifi1-wifi7, in decreasing value for each wifi (just wifi and room)
+        number_attributes = len(dataset) -1
+        for k in range (number_attributes):
+
+            wifi_table = [[row[k], row[-1]] for row in dataset] #takes wifi column and class column
+            wifi_table = sorted(wifi_table, key=lambda x: x[0]) #sorts it in ascending order
 
         #after sorting, we identify every room change and identify a cut value 
+            for i in range(len(wifi_table)):
+                if (wifi_table[i] != wifi_table[i+1]):
 
         #we also calculate the weighted average entropy of the produced subsets of each cut
         entropy_left, count_left = find_entropy(self, wifi_table[index:])
