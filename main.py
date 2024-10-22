@@ -29,34 +29,6 @@ class DecisionTree():
     #     """
     #     return ()
 
-    def find_split(self, dataset: list[list[int]]) -> tuple:    #calculate Information Gain
-        """
-        This function finds the most optimal/highest information gain
-        """
-        best_split = {"attribute": 0, "value": 0, "entropy": 0}
-        #for loop that sorts wifi1-wifi7, in decreasing value for each wifi (just wifi and room)
-        number_attributes = len(dataset) -1
-        for k in range (number_attributes):
-            wifi_table = [[row[k], row[-1]] for row in dataset] #takes wifi column and class column
-            wifi_table = sorted(wifi_table, key=lambda x: x[0]) #sorts it in ascending order
-        #after sorting, we identify every room change and identify a cut value 
-            for i in range(len(wifi_table)):
-                if (wifi_table[i][1] != wifi_table[i+1][1]):
-                    split_value = wifi_table[i][0]
-        #we also calculate the weighted average entropy of the produced subsets of each cut
-                    entropy_left, count_left = find_entropy(wifi_table[:i])
-                    entropy_right, count_right = find_entropy(wifi_table[i:])
-                    total_count = count_left + count_right
-                    weighted_entropy = (count_left/total_count)*entropy_left + (count_right/total_count)*entropy_right
-        #then we compare this weighted average entropy to the current minimum value we have. If smaller, store in best_cut tuple = <attribute, value, entropy>
-                    if weighted_entropy < best_split["entropy"]:
-                        best_split["entropy"] = weighted_entropy
-                        best_split["value"] = split_value
-                        best_split["attribute"] = k+1
-        #we exit the for loop and return this best_cut tuple
-        return best_split
-
-
     def find_entropy(self, dataset):
         """
         This function finds the entropy of the dataset
@@ -72,6 +44,39 @@ class DecisionTree():
         entropy = entropy_array.sum()
         count = len(labels)
         return entropy, count
+
+    def find_split(self, dataset: list[list[int]]) -> tuple:    #calculate Information Gain
+        """
+        This function finds the most optimal/highest information gain
+        """
+        best_split = {"attribute": 0, "value": 0, "entropy": 0}
+
+        #for loop that sorts wifi1-wifi7, in decreasing value for each wifi (just wifi and room)
+        number_attributes = len(dataset) -1
+        for k in range (number_attributes):
+            wifi_table = [[row[k], row[-1]] for row in dataset] #takes wifi column and class column
+            wifi_table = sorted(wifi_table, key=lambda x: x[0]) #sorts it in ascending order
+
+        #after sorting, we identify every room change and identify a cut value 
+            for i in range(len(wifi_table)):
+                if (wifi_table[i][1] != wifi_table[i+1][1]):
+                    split_value = wifi_table[i][0]
+
+        #we also calculate the weighted average entropy of the produced subsets of each cut
+                    entropy_left, count_left = DecisionTree.find_entropy(wifi_table[:i])
+                    entropy_right, count_right = DecisionTree.find_entropy(wifi_table[i:])
+                    total_count = count_left + count_right
+                    weighted_entropy = (count_left/total_count)*entropy_left + (count_right/total_count)*entropy_right
+
+        #then we compare this weighted average entropy to the current minimum value we have. If smaller, store in best_cut tuple = <attribute, value, entropy>
+                    if weighted_entropy < best_split["entropy"]:
+                        best_split["entropy"] = weighted_entropy
+                        best_split["value"] = split_value
+                        best_split["attribute"] = k+1
+
+        #we exit the for loop and return this best_cut tuple
+        return best_split
+
 
     def plot_tree(self, ax, x, y, dx, dy):
         """
