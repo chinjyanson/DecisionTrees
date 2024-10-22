@@ -38,8 +38,12 @@ class DecisionTree():
         #after sorting, we identify every room change and identify a cut value 
 
         #we also calculate the weighted average entropy of the produced subsets of each cut
-
+        entropy_left, count_left = find_entropy(self, wifi_table[index:])
+        entropy_right, count_right = find_entropy(self, wifi_table[:index])
+        total_count = count_left + count_right
+        weighted_entropy = (count_left/total_count)*entropy_left + (count_right/total_count)*entropy_right
         #then we compare this weighted average entropy to the current minimum value we have. If smaller, store in best_cut tuple = <attribute, value, entropy>
+        if weighted_entropy < 
 
         #we exit the for loop and return this best_cut tuple
 
@@ -57,8 +61,8 @@ class DecisionTree():
 
         entropy_array = -percentages*np.log2(percentages)
         entropy = entropy_array.sum()
-        print(entropy)
-        return entropy
+        count = len(labels)
+        return entropy, count
 
     def plot_tree(self, ax, x, y, dx, dy):
         """
