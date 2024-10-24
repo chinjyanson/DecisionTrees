@@ -24,13 +24,10 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
     end procedure
     """
 
-    if depth >= 5: 
-        return (class_labels[0], depth)
-
     class_labels = [row[-1] for row in train]
 
     # Base case: if all samples have the same label, return a leaf node
-    if np.size(np.unique(class_labels)) == 1:
+    if ((np.size(np.unique(class_labels)) == 1) | (depth >= 5)):
         return (class_labels[0], depth)
     
     else:
@@ -41,8 +38,12 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
         node.attribute = split["attribute"]
         node.val = split["value"]
 
-        left_table = [row for row in train if row[split["attribute"]] <= split["attribute"]]
-        right_table = [row for row in train if row[split["attribute"]] > split["attribute"]]
+        left_table = [row for row in train if row[split["attribute"]] <= split["value"]]
+        right_table = [row for row in train if row[split["attribute"]] > split["value"]]
+
+        # Check if empty cos otherwise doesnt work but do we want to do that?
+        if len(left_table) == 0 or len(right_table) == 0:
+            return (class_labels[0], depth)
     
         left_branch, left_depth = decision_tree_learning(left_table, depth + 1)
         right_branch, right_depth = decision_tree_learning(right_table, depth + 1)
@@ -102,6 +103,7 @@ def find_split(dataset: list[list[int]]):  #calculate Information Gain
 
 def predict():
     pass
+
 
 if __name__ == "__main__":
     dataset = parse("clean_dataset")
