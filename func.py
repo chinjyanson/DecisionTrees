@@ -1,5 +1,6 @@
 import numpy as np
 from node_class import Node
+import testing
 
 def parse(dataset_file_name):
     """
@@ -104,10 +105,19 @@ def find_split(dataset: list[list[int]]):    #calculate Information Gain
     #we exit the for loop and return this best_cut tuple
     return best_split
 
-def predict():
+def predict(data: list[list[int]]) -> tuple:
+    x = []
+    y = []
+    for row in data:
+        x.append(row[:-1])
+        y.append(row[-1])
+
+    (x_train, x_test, y_train, y_test) = testing.split_dataset(x, y, 0.2)
+    #tree = decision_tree_learning(train: list[list[int]], depth: int) -> tuple:
     pass
+
 
 
 if __name__ == "__main__":
     data = parse("clean_dataset")
-    print(decision_tree_learning(data, 1))
+    #print(decision_tree_learning(data, 1))
