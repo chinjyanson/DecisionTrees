@@ -1,31 +1,25 @@
 import numpy as np
+from node_class import Node
 
-# def parse(dataset_file_name):
-#     """
-#     Parse the txt file into wifi components
-#     """
-#     line = np.loadtxt(f"wifi_db/{dataset_file_name}.txt", delimiter='\t')
-#     return line
-def parse(filepath):
-    x = []
-    y_labels = []
-    for line in open(filepath):
-        if line.strip() != "":
-            row = line.strip().split(",")
-            # Convert the row elements to floats
-            float_row = list(map(float, row))
-            x.append(float_row)
-    x = np.array(x)
-
-def presort(dataset):
+def parse(dataset_file_name):
     """
-    Presort the data
+    Parse the txt file into wifi components
     """
-    sorted_data = [[sorted(dataset, key=lambda row: row[index])] for index in range(len(dataset[0])-1)]
-    #print(sorted_data)
-    return sorted_data
+    line = np.loadtxt(f"wifi_db/{dataset_file_name}.txt", delimiter='\t')
+    return line
+# def parse(filepath):
+#     x = []
+#     y_labels = []
+#     for line in open(filepath):
+#         if line.strip() != "":
+#             row = line.strip().split(",")
+#             # Convert the row elements to floats
+#             float_row = list(map(float, row))
+#             x.append(float_row)
+#     x = np.array(x)
 
-def decision_tree_learning(self, train: list[list[int]], depth: int) -> tuple:
+
+def decision_tree_learning(train: list[list[int]], depth: int) -> tuple:
 # arguments: Matrix containing data set and depth variable
     """
     procedure decision tree learning(training dataset, depth)
@@ -41,6 +35,9 @@ def decision_tree_learning(self, train: list[list[int]], depth: int) -> tuple:
     end procedure
     """
 
+    if depth >= 5: 
+        return (class_labels[0], depth)
+
     class_labels = [row[-1] for row in train]
 
     # Base case: if all samples have the same label, return a leaf node
@@ -48,22 +45,29 @@ def decision_tree_learning(self, train: list[list[int]], depth: int) -> tuple:
         return (class_labels[0], depth)
     
     else:
-        split = self.find_split(train)  # Find the best attribute and value to split on
+        split = find_split(train)  # Find the best attribute and value to split on
     
-        node = {'attribute': split["attribute"], 'value': split["value"], 'left': None, 'right': None}
+        # node = {'attribute': split["attribute"], 'value': split["value"], 'left': None, 'right': None}
+        node = Node()
+        node.attribute = split["attribute"]
+        node.val = split["value"]
+
+        print(train)
+
+        # left_table = train[:split["attribute"]]
 
         left_table = [row for row in train if row[split["attribute"]] <= split["attribute"]]
         right_table = [row for row in train if row[split["attribute"]] > split["attribute"]]
     
-        left_branch, left_depth = self.decision_tree_learning(left_table, depth + 1)
-        right_branch, right_depth = self.decision_tree_learning(right_table, depth + 1)
+        left_branch, left_depth = decision_tree_learning(left_table, depth + 1)
+        right_branch, right_depth = decision_tree_learning(right_table, depth + 1)
     
-        node['left'] = left_branch
-        node['right'] = right_branch
+        node.left = left_branch
+        node.right = right_branch
 
         return (node, max(left_depth, right_depth))
 
-def find_entropy(self, dataset):
+def find_entropy(dataset):
     """
     This function finds the entropy of the dataset
     """
@@ -79,7 +83,7 @@ def find_entropy(self, dataset):
     count = len(labels)
     return entropy, count
 
-def find_split(self, dataset: list[list[int]]):    #calculate Information Gain
+def find_split(dataset: list[list[int]]):    #calculate Information Gain
     """
     This function finds the most optimal/highest information gain
     """
@@ -92,13 +96,13 @@ def find_split(self, dataset: list[list[int]]):    #calculate Information Gain
         wifi_table = sorted(wifi_table, key=lambda x: x[0]) #sorts it in ascending order
 
     #after sorting, we identify every room change and identify a cut value 
-        for i in range(len(wifi_table) -1 ):   
+        for i in range(len(wifi_table) -1 ):
             if (wifi_table[i][1] != wifi_table[i+1][1]):
                 split_value = wifi_table[i][0]
 
     #we also calculate the weighted average entropy of the produced subsets of each cut
-                entropy_left, count_left = find_entropy(self, wifi_table[:i])
-                entropy_right, count_right = find_entropy(self, wifi_table[i:])
+                entropy_left, count_left = find_entropy(wifi_table[:i])
+                entropy_right, count_right = find_entropy(wifi_table[i:])
                 total_count = count_left + count_right
                 weighted_entropy = (count_left/total_count)*entropy_left + (count_right/total_count)*entropy_right
 
