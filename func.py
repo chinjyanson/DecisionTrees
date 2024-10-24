@@ -42,15 +42,19 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
         left_table = [row for row in train if row[split["attribute"]] <= split["value"]]
         right_table = [row for row in train if row[split["attribute"]] > split["value"]]
 
-        # Check if empty cos otherwise doesnt work but do we want to do that?
-        if len(left_table) == 0 or len(right_table) == 0:
-            return (class_labels[0], depth)
-    
-        left_branch, left_depth = decision_tree_learning(left_table, depth + 1)
-        right_branch, right_depth = decision_tree_learning(right_table, depth + 1)
-    
-        node.left = left_branch
-        node.right = right_branch
+        if(len(left_table)):
+            left_branch, left_depth = decision_tree_learning(left_table, depth + 1)
+            node.left = left_branch
+        else:
+            left_depth = depth
+            left_branch = None
+
+        if(len(right_table)):
+            right_branch, right_depth = decision_tree_learning(right_table, depth + 1)
+            node.right = right_branch
+        else:
+            right_depth = depth
+            right_branch = None
 
         return (node, max(left_depth, right_depth))
 

@@ -36,6 +36,5 @@ def predict(dataset: list[list[int]]):
         y.append(row[-1])
     
     (x_train, x_test, y_train, y_test)  = split_dataset(x, y)
-
-    
+    pass
 
