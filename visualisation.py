@@ -4,6 +4,7 @@ Used to generate and visualise the decision tree and the data splot
 
 import matplotlib.pyplot as plt
 import numpy as np
+from node_class import Node
 
 # Function to assign positions to the tree nodes
 def assign_positions(tree, x=0, y=0, vertical_dist=1, horizontal_dist=2, positions=None):
@@ -49,24 +50,44 @@ def plot_tree(tree, positions):
     ax.set_axis_off()
     plt.savefig("tree.png")
 
-# binary_tree = {
-#     'value': 1,
-#     'attribute': 'X1',
-#     'left': {
-#         'value': 2,
-#         'attribute': 'X2',
-#         'left': {'value': 4, 'attribute': 'X5'},
-#         'right': {'value': 5, 'attribute': 'X3'}
-#     },
-#     'right': {
-#         'value': 3,
-#         'attribute': 'X4',
-#         'right': {'value': 6, 'attribute': 'X6'}
-#     }
-# }
 
-# # Assign positions to the tree nodes
-# positions = assign_positions(binary_tree)
 
-# # Plot the tree
-# plot_tree(binary_tree, positions)
+if __name__ == "__main__":
+    root = Node()
+    root.attribute = "X1"
+    root.val = 1.5
+
+    # Left child of root
+    root.left = Node()
+    root.left.attribute = "X2"
+    root.left.val = 2.5
+
+    # Right child of root
+    root.right = Node()
+    root.right.attribute = "X3"
+    root.right.val = 3.5
+
+    # Left child of the left node (leaf node)
+    root.left.left = Node()
+    root.left.left.attribute = "X4"
+    root.left.left.val = 4.5
+    root.left.left.leaf = True  # Mark this as a leaf node
+
+    # Right child of the left node (leaf node)
+    root.left.right = Node()
+    root.left.right.attribute = "X5"
+    root.left.right.val = 5.5
+    root.left.right.leaf = True  # Mark this as a leaf node
+
+    # Right child of the right node (leaf node)
+    root.right.right = Node()
+    root.right.right.attribute = "X6"
+    root.right.right.val = 6.5
+    root.right.right.leaf = True  # Mark this as a leaf node
+
+
+    # # Assign positions to the tree nodes
+    positions = assign_positions(root)
+
+    # # Plot the tree
+    plot_tree(root, positions)
