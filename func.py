@@ -28,13 +28,16 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
     class_labels = [row[-1] for row in train]
 
     # Base case: if all samples have the same label, return a leaf node
-    if ((np.size(np.unique(class_labels)) == 1) | (depth >= 5)):
-        return (class_labels[0], depth)
+    if ((np.size(np.unique(class_labels)) == 1) or (depth >= 5)):
+        leaf_node = Node()
+        leaf_node.leaf = True
+        leaf_node.val = len(class_labels)
+        leaf_node.attribute = "Leaf"
+        return (leaf_node, depth)
     
     else:
         split = find_split(train)  # Find the best attribute and value to split on
-    
-        # node = {'attribute': split["attribute"], 'value': split["value"], 'left': None, 'right': None}
+
         node = Node()
         node.attribute = split["attribute"]
         node.val = split["value"]
@@ -60,19 +63,21 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
 
 def find_entropy(dataset):
     """
-    This function finds the entropy of the dataset
+    Calculates the entropy of the given dataset.
     """
-    labels = []
-    for line in dataset:
-        labels.append(line[-1])
+    labels = [row[-1] for row in dataset]
+    
+    if len(labels) == 0:
+        return 0, 0
     
     _, counts = np.unique(labels, return_counts=True)
-    percentages = counts/counts.sum()
+    percentages = counts / counts.sum()
 
-    entropy_array = -percentages*np.log2(percentages)
+    entropy_array = -percentages * np.log2(percentages)
     entropy = entropy_array.sum()
     count = len(labels)
     return entropy, count
+
 
 def find_split(dataset: list[list[int]]):  #calculate Information Gain
     """
@@ -92,8 +97,8 @@ def find_split(dataset: list[list[int]]):  #calculate Information Gain
                 split_value = wifi_table[i][0]
 
     #we also calculate the weighted average entropy of the produced subsets of each cut
-                entropy_left, count_left = find_entropy(wifi_table[:i])
-                entropy_right, count_right = find_entropy(wifi_table[i:])
+                entropy_left, count_left = find_entropy(wifi_table[:i+1])
+                entropy_right, count_right = find_entropy(wifi_table[i+1:])
                 total_count = count_left + count_right
                 weighted_entropy = (count_left/total_count)*entropy_left + (count_right/total_count)*entropy_right
 
@@ -101,7 +106,7 @@ def find_split(dataset: list[list[int]]):  #calculate Information Gain
                 if weighted_entropy < best_split["entropy"]:
                     best_split["entropy"] = weighted_entropy
                     best_split["value"] = split_value
-                    best_split["attribute"] = k+1
+                    best_split["attribute"] = k
 
     #we exit the for loop and return this best_cut tuple
     return best_split

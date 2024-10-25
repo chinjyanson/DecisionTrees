@@ -6,14 +6,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 from node_class import Node
 
-# Function to assign positions to the tree nodes
 def assign_positions(tree, x=0, y=0, vertical_dist=1, horizontal_dist=2, positions=None):
     if positions is None:
         positions = {}
 
-    # Assign current node position
-    print(tree.attribute)
-    positions[tree.val] = (x, y, tree.attribute)
+    # Check if current node is a leaf
+    if tree.leaf:
+        positions[tree.val] = (x, y, 'Leaf')  # Mark as a leaf node
+    else:
+        positions[tree.val] = (x, y, tree.attribute)  # Mark as a decision node
 
     # Calculate positions for the left and right children
     if tree.left:
@@ -27,7 +28,7 @@ def assign_positions(tree, x=0, y=0, vertical_dist=1, horizontal_dist=2, positio
 def plot_tree(tree, positions):
     fig, ax = plt.subplots()
 
-    # Plot the edges
+    # Function to plot edges between nodes
     def plot_edges(tree, positions):
         if tree.left:
             x_values = [positions[tree.val][0], positions[tree.left.val][0]]
@@ -42,10 +43,15 @@ def plot_tree(tree, positions):
 
     plot_edges(tree, positions)
 
-    # Plot the nodes
+    # Plot the nodes with the correct label
     for node_val, (x, y, attribute) in positions.items():
-        ax.text(x, y, f"X{attribute} < {node_val}", fontsize=12, ha='center', va='center', bbox=dict(boxstyle='round,pad=0.3', facecolor='lightblue', edgecolor='black'))
-
+        if attribute == 'Leaf':
+            ax.text(x, y, f"Leaf: {node_val}", fontsize=12, ha='center', va='center', 
+                    bbox=dict(boxstyle='round,pad=0.3', facecolor='lightgreen', edgecolor='black'))
+        else:
+            ax.text(x, y, f"X{attribute} < {node_val}", fontsize=12, ha='center', va='center', 
+                    bbox=dict(boxstyle='round,pad=0.3', facecolor='lightblue', edgecolor='black'))
+    
     ax.set_aspect('equal')
     ax.set_axis_off()
     plt.savefig("tree.png")
