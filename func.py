@@ -6,8 +6,20 @@ def parse(dataset_file_name):
     """
     Parse the txt file into wifi components
     """
-    line = np.loadtxt(f"wifi_db/{dataset_file_name}.txt", delimiter='\t')
-    return line
+    data = []
+    with open(f"wifi_db/{dataset_file_name}.txt", 'r') as f:
+        for line in f:
+            # Strip whitespace and check if tabs are present
+            if '\t' in line:
+                # Parse tab-delimited line
+                parsed_line = np.fromstring(line.strip(), sep='\t')
+            else:
+                # Parse space-delimited line
+                parsed_line = np.fromstring(line.strip(), sep=' ')
+            
+            data.append(parsed_line)
+    
+    return np.array(data) 
 
 def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
 # arguments: Matrix containing data set and depth variable

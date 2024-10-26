@@ -6,7 +6,7 @@ def main():
     """
     Main function
     """
-    dataset = func.parse("clean_dataset")
+    dataset = func.parse("noisy_dataset")
     tree, depth = func.decision_tree_learning(dataset, 1)
     # func.troubleshoot(tree)
     positions, node_ids = vis.assign_positions(tree)
