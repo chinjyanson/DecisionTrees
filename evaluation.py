@@ -26,7 +26,7 @@ def split_dataset(x, y, test_proportion, random_generator=default_rng()):
     y_train = y[shuffled_indices[:n_train]]
     x_test = x[shuffled_indices[n_train:]]
     y_test = y[shuffled_indices[n_train:]]
-    return (x_train, x_test, y_train, y_test)
+    return x_train, x_test, y_train, y_test
 
 def predict(dataset: list[list[int]]):
     x =[]
