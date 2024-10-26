@@ -31,7 +31,7 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
     if ((len(np.unique(class_labels)) == 1) or (depth >= 5)):
         leaf_node = Node()
         leaf_node.leaf = True
-        leaf_node.val = len(class_labels)
+        leaf_node.val = len(np.unique(class_labels)) 
         leaf_node.attribute = "Leaf"
         return (leaf_node, depth)
     
@@ -41,6 +41,8 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
         node = Node()
         node.attribute = split["attribute"] + 1
         node.val = split["value"]
+
+        print(f"Splitting on attribute {split['attribute']} at value {split['value']}")
 
         left_table = [row for row in train if row[split["attribute"]] <= split["value"]]
         right_table = [row for row in train if row[split["attribute"]] > split["value"]]
