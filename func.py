@@ -1,6 +1,6 @@
 import numpy as np
 from node_class import Node
-import testing
+import evaluation
 
 def parse(dataset_file_name):
     """

@@ -48,7 +48,9 @@ def assign_positions(tree, x=0, y=0, vertical_dist=3, horizontal_dist=2, depth=0
         positions[node_id] = (x, y, 'Leaf', tree.val)  # Store node value in the tuple
 
         # Add two "empty" leaf children to make it visually consistent
+        # Left empty child
         positions[node_counter] = (x - horizontal_dist // (2 ** (depth + 1)), y - vertical_dist, 'Empty', None)
+        # Right empty child
         positions[node_counter + 1] = (x + horizontal_dist // (2 ** (depth + 1)), y - vertical_dist, 'Empty', None)
         node_counter += 2  # Increment counter for the fake children
     else:
@@ -153,7 +155,7 @@ if __name__ == "__main__":
 
 
     # # Assign positions to the tree nodes
-    positions = assign_positions(root)
+    positions, node_ids = assign_positions(root)
 
     # # Plot the tree
-    plot_tree(root, positions)
+    plot_tree(root, positions, node_ids)
