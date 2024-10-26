@@ -8,7 +8,7 @@ def main():
     """
     dataset = func.parse("clean_dataset")
     tree, depth = func.decision_tree_learning(dataset, 1)
-    print(tree)
+    # func.troubleshoot(tree)
     positions = vis.assign_positions(tree)
     print(positions)
     vis.plot_tree(tree, positions)

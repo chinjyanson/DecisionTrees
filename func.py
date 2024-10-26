@@ -28,7 +28,7 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
     class_labels = [row[-1] for row in train]
 
     # Base case: if all samples have the same label, return a leaf node
-    if ((np.size(np.unique(class_labels)) == 1) or (depth >= 5)):
+    if ((len(np.unique(class_labels)) == 1) or (depth >= 5)):
         leaf_node = Node()
         leaf_node.leaf = True
         leaf_node.val = len(class_labels)
@@ -39,7 +39,7 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
         split = find_split(train)  # Find the best attribute and value to split on
 
         node = Node()
-        node.attribute = split["attribute"]
+        node.attribute = split["attribute"] + 1
         node.val = split["value"]
 
         left_table = [row for row in train if row[split["attribute"]] <= split["value"]]
