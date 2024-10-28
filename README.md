@@ -6,7 +6,7 @@ This is the first coursework for COMP60012 Introduction to Machine Learning.
 | Name                              | CID        | Course |
 |-----------------------------------|------------|--------|
 | Tianqi Hu                         | 02190317   | EIE    |
-| Samuel Khoo                       |            | EIE    |
+| Samuel Khoo                       | 02264291   | EIE    |
 | Anson Chin                        | 02194736   | EIE    |
 | Constance Geneau De Lamarliere    | 02209964   | EIE    |
 
