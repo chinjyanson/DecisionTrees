@@ -1,13 +1,8 @@
-# Decision Trees
-This is an project coursework for COMP60012 Introduction to Machine Learning.
+# Introduction to Machine Learning Coursework 1 - Decision Trees
 
-## Installation
-To download all dependencies please run the following code in the terminal:
-```
-pip install requirements
-```
+This is the first coursework for COMP60012 Introduction to Machine Learning.
 
-# Members
+## Group Members
 | Name                              | CID        | Course |
 |-----------------------------------|------------|--------|
 | Tianqi Hu                         | 02190317   | EIE    |
@@ -15,16 +10,23 @@ pip install requirements
 | Anson Chin                        | 02194736   | EIE    |
 | Constance Geneau De Lamarliere    | 02209964   | EIE    |
 
-# How 
+## How to run the project
 
+### Installation
+- To download all dependencies please run the following code in the terminal:
+```
+pip install requirements
+```
 
-1) sort according to wifi number in decreasing order. Only consider the wifi column and the class column for less complexity
-2) Evaluate CUTS where the room number changes for a specific valu of wifi number. Evaluate and compare to previous entropy and if better, store in the form: best_split = (attribute, value, entropy)
-3) Iterate though all the cuts of this wifi column and only store if better
-4) Once a full wifi has been evaluated and the best split (cut) has been found, move on to the next wifi
+### Running
+- Please download the source folder code and unzip it.
+- Open VSCode or any code editor and open the folder.
+- The datasets are found in the wifi_db folder. If you wish to run the code on a dataset that is not the clean_dataset or noisy_dataset please add your .txt file the wifi_db folder.
+- Open a bash terminal and run:
+```
+python3 main.py
+```
+- Enter the name of the dataset you wish to run WITHOUT the .txt extension.
+- Enter the maximum depth you wish the tree to be (we recommend X). #TO TEST using evaluation so we can recommend a level
+- To view the built the tree, open the generated tree.png file.
 
-Next setps:
-- Optimise code so actually can run the tree
-- Add extra lgoic to simplify: either get rid of some cuts or stops/takes majority when less than 5 samples in a subset
-- Visualise tree
-- Evaluate it
