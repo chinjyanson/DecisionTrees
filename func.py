@@ -37,8 +37,8 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
 
     class_labels = [row[-1] for row in train]
 
-    # Base case: if all samples have the same label, return a leaf node
-    if (depth >= 7):
+    #Check if we have reached the maximum depth
+    if (depth >= 5):
         leaf_node = Node()
         leaf_node.leaf = True
         unique_classes, counts = np.unique(class_labels, return_counts=True)
@@ -47,6 +47,7 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
         leaf_node.attribute = "Leaf"
         return (leaf_node, depth)
 
+    #Check if all samples have the same label, return a leaf node if so 
     elif (len(np.unique(class_labels)) == 1):
         leaf_node = Node()
         leaf_node.leaf = True
@@ -54,7 +55,6 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
         leaf_node.attribute = "Leaf"
         return (leaf_node, depth)
         
-    
     else:
         split = find_split(train)  # Find the best attribute and value to split on
 
@@ -117,7 +117,7 @@ def find_entropy(dataset):
     return entropy, count
 
 
-def find_split(dataset: list[list[int]]):  #calculate Information Gain
+def find_split(dataset: list[list[float]]):  #calculate Information Gain
     """
     This function finds the most optimal/highest information gain
     """
@@ -130,8 +130,9 @@ def find_split(dataset: list[list[int]]):  #calculate Information Gain
         wifi_table = sorted(wifi_table, key=lambda x: x[0]) #sorts it in ascending order
 
     #after sorting, we identify every room change and identify a cut value 
+    #iterate only len(wifi_table)-1 times because we dont evaluate the last line (can't have a split with 0 entries)
         for i in range(len(wifi_table) -1):
-            if (wifi_table[i][1] != wifi_table[i+1][1]):
+            if ((wifi_table[i][1] != wifi_table[i+1][1]) & (wifi_table[i][0] != wifi_table[i+1][0])):
                 split_value = wifi_table[i][0]
 
     #we also calculate the weighted average entropy of the produced subsets of each cut
@@ -141,7 +142,7 @@ def find_split(dataset: list[list[int]]):  #calculate Information Gain
                 weighted_entropy = (count_left/total_count)*entropy_left + (count_right/total_count)*entropy_right
 
     #then we compare this weighted average entropy to the current minimum value we have. If smaller, store in best_cut map = <attribute, value, entropy>
-                if (weighted_entropy < best_split["entropy"]) & (weighted_entropy !=0):
+                if (weighted_entropy < best_split["entropy"]):
                     best_split["entropy"] = weighted_entropy
                     best_split["value"] = split_value
                     best_split["attribute"] = k
