@@ -1,6 +1,6 @@
 import numpy as np
 from node_class import Node
-import evaluation
+import evaluation as eval
 
 def parse(dataset_file_name):
     """
@@ -54,7 +54,7 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
         node.attribute = split["attribute"] + 1
         node.val = split["value"]
 
-        print(f"Splitting on attribute {split['attribute']} at value {split['value']}")
+        # print(f"Splitting on attribute {split['attribute']} at value {split['value']}")
 
         left_table = [row for row in train if row[split["attribute"]] <= split["value"]]
         right_table = [row for row in train if row[split["attribute"]] > split["value"]]
@@ -101,8 +101,9 @@ def find_split(dataset: list[list[int]]):  #calculate Information Gain
 
     #for loop that sorts wifi1-wifi7, in decreasing value for each wifi (just wifi and room)
     number_attributes = len(dataset[0])-1
-    for k in range (number_attributes):
+    for k in range (0, number_attributes):
         wifi_table = [[row[k], row[-1]] for row in dataset] #takes wifi column and class column
+        # print(wifi_table)
         wifi_table = sorted(wifi_table, key=lambda x: x[0]) #sorts it in ascending order
 
     #after sorting, we identify every room change and identify a cut value 
@@ -127,4 +128,6 @@ def find_split(dataset: list[list[int]]):  #calculate Information Gain
 
 if __name__ == "__main__":
     data = parse("clean_dataset")
-    print(decision_tree_learning(data, 1))
+    x_train, x_test, y_train, y_test = eval.split_dataset(data[:, :-1], data[:, -1], 0.2)
+    dataset = list(zip(x_train, y_train))
+    # print(decision_tree_learning(dataset, 1))

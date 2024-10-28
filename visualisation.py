@@ -17,9 +17,9 @@ def tree_depth(tree):
         return 0
     return 1 + max(tree_depth(tree.left), tree_depth(tree.right))
 
-def assign_positions(tree, x=0, y=0, vertical_dist=3, horizontal_dist=2, depth=0, positions=None, max_depth=0, node_ids=None):
+def assign_positions(tree, x=0, y=0, vertical_dist=1, horizontal_dist=4, depth=0, positions=None, max_depth=0, node_ids=None):
     """
-    Assign positions to each node dynamically based on the depth of the tree, using unique node IDs.
+    Assign positions to each node dynamically based on the depth of the tree.
     """
     global node_counter  # Access the global node counter
     
@@ -32,9 +32,6 @@ def assign_positions(tree, x=0, y=0, vertical_dist=3, horizontal_dist=2, depth=0
     if max_depth == 0:
         max_depth = tree_depth(tree)
 
-    # Set a uniform horizontal distance between nodes at the same depth
-    horizontal_dist = 2 ** (max_depth - 1)  # Use maximum depth for spacing
-
     # Generate a unique ID for the current node
     node_id = node_counter
     node_counter += 1
@@ -42,25 +39,26 @@ def assign_positions(tree, x=0, y=0, vertical_dist=3, horizontal_dist=2, depth=0
     # Store the node's unique ID
     node_ids[tree] = node_id
 
+    # Adjust horizontal distance dynamically based on the depth
+    current_horizontal_dist = horizontal_dist * (2 ** (max_depth - depth))
+
+    # Debug: Print the node being processed
+    print(f"Processing node {node_id} at depth {depth}, X: {x}, Y: {y}, leaf: {tree.leaf if hasattr(tree, 'leaf') else False}")
+
     # Check if current node is a leaf
     if tree.leaf:
         # Assign positions for the leaf node
         positions[node_id] = (x, y, 'Leaf', tree.val)  # Store node value in the tuple
-
-        # Add two "empty" leaf children to make it visually consistent
-        # Left empty child
-        positions[node_counter] = (x - horizontal_dist // (2 ** (depth + 1)), y - vertical_dist, 'Empty', None)
-        # Right empty child
-        positions[node_counter + 1] = (x + horizontal_dist // (2 ** (depth + 1)), y - vertical_dist, 'Empty', None)
-        node_counter += 2  # Increment counter for the fake children
+        print(f"Assigned leaf node {node_id}: (x={x}, y={y}) with value {tree.val}")
     else:
         # Assign positions for the decision node
         positions[node_id] = (x, y, tree.attribute, tree.val)  # Store node value in the tuple
+        print(f"Assigned decision node {node_id}: (x={x}, y={y}) with attribute {tree.attribute} and value {tree.val}")
 
         # Recursively calculate positions for left and right children
         if tree.left:
             positions, node_ids = assign_positions(tree.left, 
-                                                   x - horizontal_dist // (2 ** (depth + 1)), 
+                                                   x - current_horizontal_dist,  # Move left child more to the left
                                                    y - vertical_dist, 
                                                    vertical_dist, 
                                                    horizontal_dist, 
@@ -70,7 +68,7 @@ def assign_positions(tree, x=0, y=0, vertical_dist=3, horizontal_dist=2, depth=0
                                                    node_ids)
         if tree.right:
             positions, node_ids = assign_positions(tree.right, 
-                                                   x + horizontal_dist // (2 ** (depth + 1)), 
+                                                   x + current_horizontal_dist,  # Move right child more to the right
                                                    y - vertical_dist, 
                                                    vertical_dist, 
                                                    horizontal_dist, 
@@ -81,9 +79,9 @@ def assign_positions(tree, x=0, y=0, vertical_dist=3, horizontal_dist=2, depth=0
 
     return positions, node_ids
 
-# Function to plot the tree using the calculated positions
-def plot_tree(tree, positions, node_ids):
-    fig, ax = plt.subplots(figsize=(12, 8))  # Increased the size of the plot for better spacing
+
+def plot_tree(tree, positions, node_ids, depth):
+    fig, ax = plt.subplots(figsize=(2 *depth, 1 *depth))  # Increased the size of the plot for better spacing
 
     # Function to plot edges between nodes
     def plot_edges(tree, positions, node_ids):
@@ -106,19 +104,17 @@ def plot_tree(tree, positions, node_ids):
     # Plot the nodes with the correct label
     for node_id, (x, y, attribute, node_val) in positions.items():
         if attribute == 'Leaf':
-            ax.text(x, y, f"Leaf: {node_val}", fontsize=12, ha='center', va='center', 
+            print(f"Plotting leaf node {node_id} at (x={x}, y={y}) with value {node_val}")
+            ax.text(x, y, f"leaf: {node_val}", fontsize=12, ha='center', va='center', 
                     bbox=dict(boxstyle='round,pad=0.3', facecolor='lightgreen', edgecolor='black'))
-        elif attribute == 'Empty':
-            ax.text(x, y, "", fontsize=12, ha='center', va='center', 
-                    bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor='white'))  # Invisible box
         else:
+            print(f"Plotting decision node {node_id} at (x={x}, y={y}) with attribute {attribute} and value {node_val}")
             ax.text(x, y, f"X{attribute} < {node_val}", fontsize=12, ha='center', va='center', 
                     bbox=dict(boxstyle='round,pad=0.3', facecolor='lightblue', edgecolor='black'))
     
     ax.set_aspect('auto')  # Change aspect to auto for better vertical spacing
     ax.set_axis_off()
     plt.savefig("tree.png")
-
 
 if __name__ == "__main__":
     root = Node()
