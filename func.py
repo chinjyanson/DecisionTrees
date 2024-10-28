@@ -6,20 +6,18 @@ def parse(dataset_file_name):
     """
     Parse the txt file into wifi components
     """
-    data = []
+    x = []
+    y = []
     with open(f"wifi_db/{dataset_file_name}.txt", 'r') as f:
         for line in f:
-            # Strip whitespace and check if tabs are present
-            if '\t' in line:
-                # Parse tab-delimited line
-                parsed_line = np.fromstring(line.strip(), sep='\t')
-            else:
-                # Parse space-delimited line
-                parsed_line = np.fromstring(line.strip(), sep=' ')
-            
-            data.append(parsed_line)
+            if line.strip() != "":
+                row = line.strip().split()
+                x.append(list(map(float,row[:-1])))
+                y.append(float(row[-1]))
+    x = np.array(x)
+    y = np.array(y)
     
-    return np.array(data) 
+    return x, y                                                                                                                                                                                                                                                                       
 
 def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
 # arguments: Matrix containing data set and depth variable
@@ -40,7 +38,7 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
     class_labels = [row[-1] for row in train]
 
     # Base case: if all samples have the same label, return a leaf node
-    if ((len(np.unique(class_labels)) == 1) or (depth >= 5)):
+    if ((len(np.unique(class_labels)) == 1) or (depth >= 7)):
         leaf_node = Node()
         leaf_node.leaf = True
         leaf_node.val = len(np.unique(class_labels)) 
@@ -116,7 +114,7 @@ def find_split(dataset: list[list[int]]):  #calculate Information Gain
                 total_count = count_left + count_right
                 weighted_entropy = (count_left/total_count)*entropy_left + (count_right/total_count)*entropy_right
 
-    #then we compare this weighted average entropy to the current minimum value we have. If smaller, store in best_cut tuple = <attribute, value, entropy>
+    #then we compare this weighted average entropy to the current minimum value we have. If smaller, store in best_cut map = <attribute, value, entropy>
                 if weighted_entropy < best_split["entropy"]:
                     best_split["entropy"] = weighted_entropy
                     best_split["value"] = split_value
