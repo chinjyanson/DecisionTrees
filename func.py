@@ -38,12 +38,12 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
     class_labels = [row[-1] for row in train]
 
     #Check if we have reached the maximum depth
-    if (depth >= 5):
+    #If so, take the majority label of the remaining datapoints
+    if (depth >= 10):
         leaf_node = Node()
         leaf_node.leaf = True
         unique_classes, counts = np.unique(class_labels, return_counts=True)
         leaf_node.val = int(unique_classes[np.argmax(counts)])
-        print(leaf_node.val)
         leaf_node.attribute = "Leaf"
         return (leaf_node, depth)
 
@@ -58,44 +58,31 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
     else:
         split = find_split(train)  # Find the best attribute and value to split on
 
-        node = Node()
-        node.attribute = split["attribute"] + 1
-        node.val = split["value"]
+        #However if our dataset has only one possible split, and the 2 datapoints of this split have the same attribute value but different class:
+        #This split should not be considered and hence no entropy will be calculated. The "best entropy" value would hence never be updated from 100 (arbitrary value).
+        #We should return a leaf node with the majority label of the remaining datapoints
+        if (split["entropy"] == 100):
+            leaf_node = Node()
+            leaf_node.leaf = True
+            unique_classes, counts = np.unique(class_labels, return_counts=True)
+            leaf_node.val = int(unique_classes[np.argmax(counts)])
+            leaf_node.attribute = "Leaf"
+            return (leaf_node, depth)
+        else:
+            node = Node()
+            node.attribute = split["attribute"] + 1
+            node.val = split["value"]
 
-        # print(f"Splitting on attribute {split['attribute']} at value {split['value']}")
+            left_table = [row for row in train if row[split["attribute"]] <= split["value"]]
+            right_table = [row for row in train if row[split["attribute"]] > split["value"]]
 
-        left_table = [row for row in train if row[split["attribute"]] <= split["value"]]
-        right_table = [row for row in train if row[split["attribute"]] > split["value"]]
+            left_branch, left_depth = decision_tree_learning(left_table, depth + 1)
+            node.left = left_branch
 
-        # if(len(left_table)):
-        left_branch, left_depth = decision_tree_learning(left_table, depth + 1)
-        node.left = left_branch
-        # else:
-        #     left_depth = depth
-        #     leaf_node = Node()
-        #     leaf_node.leaf = True
-        #     unique_classes, counts = np.unique(class_labels, return_counts=True)
-        #     majority_class = int(unique_classes[np.argmax(counts)])
-        #     leaf_node.val = majority_class
-        #     leaf_node.attribute = "Leaf"
-        #     left_branch = leaf_node
+            right_branch, right_depth = decision_tree_learning(right_table, depth + 1)
+            node.right = right_branch
             
-
-        # if(len(right_table)):
-        right_branch, right_depth = decision_tree_learning(right_table, depth + 1)
-        node.right = right_branch
-
-        # else:
-        #     right_depth = depth
-        #     leaf_node = Node()
-        #     leaf_node.leaf = True
-        #     unique_classes, counts = np.unique(class_labels, return_counts=True)
-        #     majority_class = int(unique_classes[np.argmax(counts)])
-        #     leaf_node.val = majority_class
-        #     leaf_node.attribute = "Leaf"
-        #     right_branch = leaf_node
-        
-        return (node, max(left_depth, right_depth))
+            return (node, max(left_depth, right_depth))
 
        
 
@@ -154,4 +141,3 @@ if __name__ == "__main__":
     data = parse("clean_dataset")
     x_train, x_test, y_train, y_test = eval.split_dataset(data[:, :-1], data[:, -1], 0.2)
     dataset = list(zip(x_train, y_train))
-    # print(decision_tree_learning(dataset, 1))
