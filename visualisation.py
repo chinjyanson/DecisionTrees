@@ -81,7 +81,7 @@ def assign_positions(tree, x=0, y=0, vertical_dist=1, horizontal_dist=4, depth=0
 
 
 def plot_tree(tree, positions, node_ids, depth):
-    fig, ax = plt.subplots(figsize=(2 *depth, 1 *depth))  # Increased the size of the plot for better spacing
+    fig, ax = plt.subplots(figsize=(10 *depth, 4 *depth))  # Increased the size of the plot for better spacing
 
     # Function to plot edges between nodes
     def plot_edges(tree, positions, node_ids):
