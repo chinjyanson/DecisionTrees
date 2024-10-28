@@ -38,12 +38,22 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
     class_labels = [row[-1] for row in train]
 
     # Base case: if all samples have the same label, return a leaf node
-    if ((len(np.unique(class_labels)) == 1) or (depth >= 7)):
+    if (depth >= 7):
+        leaf_node = Node()
+        leaf_node.leaf = True
+        unique_classes, counts = np.unique(class_labels, return_counts=True)
+        leaf_node.val = int(unique_classes[np.argmax(counts)])
+        print(leaf_node.val)
+        leaf_node.attribute = "Leaf"
+        return (leaf_node, depth)
+
+    elif (len(np.unique(class_labels)) == 1):
         leaf_node = Node()
         leaf_node.leaf = True
         leaf_node.val = len(np.unique(class_labels)) 
         leaf_node.attribute = "Leaf"
         return (leaf_node, depth)
+        
     
     else:
         split = find_split(train)  # Find the best attribute and value to split on
@@ -57,21 +67,37 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
         left_table = [row for row in train if row[split["attribute"]] <= split["value"]]
         right_table = [row for row in train if row[split["attribute"]] > split["value"]]
 
-        if(len(left_table)):
-            left_branch, left_depth = decision_tree_learning(left_table, depth + 1)
-            node.left = left_branch
-        else:
-            left_depth = depth
-            left_branch = None
+        # if(len(left_table)):
+        left_branch, left_depth = decision_tree_learning(left_table, depth + 1)
+        node.left = left_branch
+        # else:
+        #     left_depth = depth
+        #     leaf_node = Node()
+        #     leaf_node.leaf = True
+        #     unique_classes, counts = np.unique(class_labels, return_counts=True)
+        #     majority_class = int(unique_classes[np.argmax(counts)])
+        #     leaf_node.val = majority_class
+        #     leaf_node.attribute = "Leaf"
+        #     left_branch = leaf_node
+            
 
-        if(len(right_table)):
-            right_branch, right_depth = decision_tree_learning(right_table, depth + 1)
-            node.right = right_branch
-        else:
-            right_depth = depth
-            right_branch = None
+        # if(len(right_table)):
+        right_branch, right_depth = decision_tree_learning(right_table, depth + 1)
+        node.right = right_branch
 
+        # else:
+        #     right_depth = depth
+        #     leaf_node = Node()
+        #     leaf_node.leaf = True
+        #     unique_classes, counts = np.unique(class_labels, return_counts=True)
+        #     majority_class = int(unique_classes[np.argmax(counts)])
+        #     leaf_node.val = majority_class
+        #     leaf_node.attribute = "Leaf"
+        #     right_branch = leaf_node
+        
         return (node, max(left_depth, right_depth))
+
+       
 
 def find_entropy(dataset):
     """
@@ -101,7 +127,6 @@ def find_split(dataset: list[list[int]]):  #calculate Information Gain
     number_attributes = len(dataset[0])-1
     for k in range (0, number_attributes):
         wifi_table = [[row[k], row[-1]] for row in dataset] #takes wifi column and class column
-        # print(wifi_table)
         wifi_table = sorted(wifi_table, key=lambda x: x[0]) #sorts it in ascending order
 
     #after sorting, we identify every room change and identify a cut value 
@@ -116,7 +141,7 @@ def find_split(dataset: list[list[int]]):  #calculate Information Gain
                 weighted_entropy = (count_left/total_count)*entropy_left + (count_right/total_count)*entropy_right
 
     #then we compare this weighted average entropy to the current minimum value we have. If smaller, store in best_cut map = <attribute, value, entropy>
-                if weighted_entropy < best_split["entropy"]:
+                if (weighted_entropy < best_split["entropy"]) & (weighted_entropy !=0):
                     best_split["entropy"] = weighted_entropy
                     best_split["value"] = split_value
                     best_split["attribute"] = k
