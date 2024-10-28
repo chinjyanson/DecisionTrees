@@ -39,20 +39,23 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
 
     #Check if we have reached the maximum depth
     #If so, take the majority label of the remaining datapoints
-    if (depth >= 10):
+    if (depth >= 8):
         leaf_node = Node()
         leaf_node.leaf = True
         unique_classes, counts = np.unique(class_labels, return_counts=True)
         leaf_node.val = int(unique_classes[np.argmax(counts)])
         leaf_node.attribute = "Leaf"
+        print("hit depth")
         return (leaf_node, depth)
 
     #Check if all samples have the same label, return a leaf node if so 
     elif (len(np.unique(class_labels)) == 1):
         leaf_node = Node()
         leaf_node.leaf = True
-        leaf_node.val = len(np.unique(class_labels)) 
+        leaf_node.val = int(np.unique(class_labels))
+        print(class_labels)
         leaf_node.attribute = "Leaf"
+        print("same")
         return (leaf_node, depth)
         
     else:
@@ -67,6 +70,7 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
             unique_classes, counts = np.unique(class_labels, return_counts=True)
             leaf_node.val = int(unique_classes[np.argmax(counts)])
             leaf_node.attribute = "Leaf"
+            print("special case")
             return (leaf_node, depth)
         else:
             node = Node()
