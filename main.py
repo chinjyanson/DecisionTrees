@@ -14,7 +14,6 @@ def main():
     x_train, x_test, y_train, y_test = eval.split_dataset(x, y, 0.2)
 
     train_dataset = np.column_stack((x_train, y_train))
-    print(type(train_dataset))
 
     with open('train_dataset.txt', 'w') as file:
         for item in train_dataset:
