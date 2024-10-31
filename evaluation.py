@@ -5,13 +5,14 @@
 import numpy as np
 from func import decision_tree_learning
 from node_class import Node
-from typing import Tuple
-
+from typing import Dict, Tuple
 
 def K_fold_evaluation(
-    data: np.ndarray, num_folds: int = 10, shuffle: bool = True
-) -> Tuple[float, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """
+    data: np.ndarray,
+    num_folds: int = 10,
+    shuffle: bool = True
+) -> Dict[str, np.ndarray]:
+    '''
     Performs K-fold cross-validation on a dataset using a decision tree.
 
     Args:
@@ -20,13 +21,14 @@ def K_fold_evaluation(
         shuffle (bool): Whether to shuffle the data before splitting into folds.
 
     Returns:
-        dict: A dictionary containing average evaluation metrics:
-            - 'classification_rate': Overall classification accuracy.
-            - 'recall': Per-class recall values.
-            - 'precision': Per-class precision values.
-            - 'F1_score': Per-class F1 scores.
-            - 'confusion_matrix': Average confusion matrix.
-    """
+        Dict[str, np.ndarray]:
+            Dictionary containing the following keys:
+            - "classification_rate": Average classification rate as a float.
+            - "recall": Average recall per class as a NumPy array.
+            - "precision": Average precision per class as a NumPy array.
+            - "F1_score": Average F1 score per class as a NumPy array.
+            - "confusion_matrix": Average confusion matrix as a NumPy array.
+    '''
     if shuffle:
         np.random.shuffle(data)
 
