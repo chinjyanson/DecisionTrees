@@ -1,3 +1,6 @@
+"""
+Core functions for parsing data, splitting, and constructing a decision tree.
+"""
 import numpy as np
 from node_class import Node
 
