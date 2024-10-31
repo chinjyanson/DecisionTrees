@@ -1,5 +1,5 @@
 import numpy as np
-import func
+import decision_tree
 import visualisation as vs
 import evaluation as ev
 
@@ -9,11 +9,11 @@ def main():
     """
     # Step 1: Parse the dataset
     dataset_name = input("Please enter the name of the dataset file without the .txt suffix: ")
-    x, y = func.parse(dataset_name)
+    x, y = decision_tree.parse(dataset_name)
     data = np.column_stack((x, y)) # Combine features and labels into one dataset
 
     # Step 2: Visualise the whole dataset as a decision tree
-    tree, depth = func.decision_tree_learning(data, 0)
+    tree, depth = decision_tree.decision_tree_learning(data, 0)
     vs.visualise(tree, depth)
 
    # Step 3: Perform K-fold evaluation on the data

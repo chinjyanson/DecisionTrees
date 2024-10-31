@@ -2,7 +2,7 @@
 10-fold cross-validation of a decision tree with performance evaluation.
 '''
 import numpy as np
-from func import decision_tree_learning
+from decision_tree import decision_tree_learning
 from node_class import Node
 from typing import Dict, Tuple
 

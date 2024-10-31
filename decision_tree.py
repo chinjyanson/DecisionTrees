@@ -1,18 +1,33 @@
 import numpy as np
 from node_class import Node
+from typing import Dict, List, Tuple
 
-def parse(dataset_file_name: str) -> tuple:
+def parse(dataset_file_name: str) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Parse the txt file into wifi components
-    Params: dataset_file_name: str: The name of the dataset file
+    Parses a dataset file of WiFi signal strengths and labels.
+
+    Args:
+        dataset_file_name (str): The name of the dataset file (without extension),
+                                 located in the "wifi_db/" directory.
+
+    Returns:
+        Tuple[numpy.ndarray, numpy.ndarray]:
+            A tuple containing:
+            - x (numpy.ndarray): Array of WiFi signal strengths, with shape (n_samples, n_features).
+            - y (numpy.ndarray): Array of corresponding labels, with shape (n_samples,).
     """
     x, y = [], []
-    with open(f"wifi_db/{dataset_file_name}.txt", 'r') as f:
-        for line in f:
-            if line.strip() != "":
-                row = line.strip().split()
-                x.append(list(map(float,row[:-1])))
-                y.append(float(row[-1]))
+
+    # Read the dataset file and parse contents
+    with open(f"wifi_db/{dataset_file_name}.txt", 'r') as file:
+        for line in file:
+            line = line.strip()
+            if line:
+                row = list(map(float, line.split()))
+                x.append(row[:-1])  # Signal strengths (features)
+                y.append(row[-1])   # Label
+
+    # Convert lists to numpy arrays
     x = np.array(x)
     y = np.array(y)
 
@@ -26,16 +41,6 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
     """
 
     class_labels = [row[-1] for row in train]
-
-    #Check if we have reached the maximum depth
-    #If so, take the majority label of the remaining datapoints
-    # if (depth >= 6):
-    #     leaf_node = Node()
-    #     leaf_node.leaf = True
-    #     unique_classes, counts = np.unique(class_labels, return_counts=True)
-    #     leaf_node.val = int(unique_classes[np.argmax(counts)])
-    #     leaf_node.attribute = "Leaf"
-    #     return (leaf_node, depth)
 
     #Check if all samples have the same label, return a leaf node if so
     if (len(np.unique(class_labels)) == 1):
@@ -123,5 +128,53 @@ def find_split(dataset: list[list[float]]) -> dict:
                     best_split["attribute"] = k
 
     #we exit the for loop and return this best_cut tuple
+    return best_split
+
+def find_split2(dataset: List[List[float]]) -> Dict[str, float]:
+    """
+    Finds the optimal attribute and value to split the dataset based on information gain.
+
+    Args:
+        dataset (List[List[float]]): The dataset to evaluate for potential splits,
+                                      where each inner list represents a sample 
+                                      with features and the last element as the label.
+
+    Returns:
+        Dict[str, float]:
+            A dictionary containing the best split information:
+            - "attribute": Index of the attribute used for the split.
+            - "value": The value of the attribute at which to split.
+            - "entropy": The entropy of the resulting split.
+    """
+    best_split = {"attribute": -1, "value": None, "entropy": float('inf')}
+    number_of_attributes = len(dataset[0]) - 1
+
+    # Iterate over each attribute to find the optimal split
+    for attribute_index in range(number_of_attributes):
+        # Create a sorted list of attribute values with corresponding labels
+        sorted_wifi_table = sorted(
+            [(row[attribute_index], row[-1]) for row in dataset],
+            key=lambda x: x[0]
+        )
+
+        # Iterate through sorted values to find potential split points
+        for i in range(len(sorted_wifi_table) - 1):
+            # Check for a change in class label to find a split point
+            if sorted_wifi_table[i][1] != sorted_wifi_table[i + 1][1]:
+                split_value = sorted_wifi_table[i][0]
+
+                # Calculate the weighted average entropy of the resulting subsets
+                left_entropy, left_count = find_entropy(sorted_wifi_table[:i + 1])
+                right_entropy, right_count = find_entropy(sorted_wifi_table[i + 1:])
+                total_count = left_count + right_count
+                weighted_entropy = (
+                    (left_count / total_count) * left_entropy +
+                    (right_count / total_count) * right_entropy
+                )
+
+                # Update the best split if the new weighted entropy is lower
+                if weighted_entropy < best_split["entropy"]:
+                    best_split.update({"entropy": weighted_entropy, "value": split_value, "attribute": attribute_index})
+
     return best_split
 
