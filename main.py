@@ -2,7 +2,6 @@ import numpy as np
 import func
 import visualisation as vis
 import evaluation as eval
-from numpy.random import default_rng
 
 def main():
     """
@@ -19,7 +18,7 @@ def main():
 
     # Step 3: Perform K-fold evaluation on the data
     avg_classification_rate, avg_recall, avg_precision, avg_F1, avg_confusion_matrix = eval.K_fold_evaluation(data)
-    
+
     # Print cross-validation metrics
     print("Cross-Validation Metrics (10-fold):")
     print(f"Average Classification Rate: {avg_classification_rate:.2f}")

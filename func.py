@@ -6,8 +6,7 @@ def parse(dataset_file_name: str) -> tuple:
     Parse the txt file into wifi components
     Params: dataset_file_name: str: The name of the dataset file
     """
-    x = []
-    y = []
+    x, y = [], []
     with open(f"wifi_db/{dataset_file_name}.txt", 'r') as f:
         for line in f:
             if line.strip() != "":
@@ -16,8 +15,8 @@ def parse(dataset_file_name: str) -> tuple:
                 y.append(float(row[-1]))
     x = np.array(x)
     y = np.array(y)
-    
-    return x, y                                                                                                                                                                                                                                                                       
+
+    return x, y
 
 def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
     """
@@ -38,14 +37,14 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
     #     leaf_node.attribute = "Leaf"
     #     return (leaf_node, depth)
 
-    #Check if all samples have the same label, return a leaf node if so 
+    #Check if all samples have the same label, return a leaf node if so
     if (len(np.unique(class_labels)) == 1):
         leaf_node = Node()
         leaf_node.leaf = True
         leaf_node.val = int(np.unique(class_labels))
         leaf_node.attribute = "Leaf"
         return (leaf_node, depth)
-        
+
     else:
         split = find_split(train)  # Find the best attribute and value to split on
 
@@ -92,7 +91,7 @@ def find_entropy(dataset: list[list[float]]) -> tuple:
     count = len(labels)
     return entropy, count
 
-def find_split(dataset: list[list[float]]) -> dict: 
+def find_split(dataset: list[list[float]]) -> dict:
     """
     This function finds the most optimal/highest information gain
     Params: dataset: list[list[float]]: The dataset to find the split on
@@ -105,17 +104,17 @@ def find_split(dataset: list[list[float]]) -> dict:
         wifi_table = [[row[k], row[-1]] for row in dataset] #takes wifi column and class column
         wifi_table = sorted(wifi_table, key=lambda x: x[0]) #sorts it in ascending order
 
-    #after sorting, we identify every room change and identify a cut value 
+    #after sorting, we identify every room change and identify a cut value
     #iterate only len(wifi_table)-1 times because we dont evaluate the last line (can't have a split with 0 entries)
         for i in range(len(wifi_table) -1):
             if ((wifi_table[i][1] != wifi_table[i+1][1]) & (wifi_table[i][0] != wifi_table[i+1][0])):
                 split_value = wifi_table[i][0]
 
     #we also calculate the weighted average entropy of the produced subsets of each cut
-                entropy_left, count_left = find_entropy(wifi_table[:i+1])
-                entropy_right, count_right = find_entropy(wifi_table[i+1:])
-                total_count = count_left + count_right
-                weighted_entropy = (count_left/total_count)*entropy_left + (count_right/total_count)*entropy_right
+                left_entropy, left_count = find_entropy(wifi_table[:i+1])
+                right_entropy, right_count = find_entropy(wifi_table[i+1:])
+                total_count = left_count + right_count
+                weighted_entropy = (left_count/total_count)*left_entropy + (right_count/total_count)*right_entropy
 
     #then we compare this weighted average entropy to the current minimum value we have. If smaller, store in best_cut map = <attribute, value, entropy>
                 if (weighted_entropy < best_split["entropy"]):
