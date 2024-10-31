@@ -1,8 +1,7 @@
 import numpy as np
 from node_class import Node
-from typing import Dict, List, Tuple
 
-def parse(dataset_file_name: str) -> Tuple[np.ndarray, np.ndarray]:
+def parse(dataset_file_name: str) -> tuple:
     """
     Parses a dataset file of WiFi signal strengths and labels.
 
@@ -11,7 +10,7 @@ def parse(dataset_file_name: str) -> Tuple[np.ndarray, np.ndarray]:
                                  located in the "wifi_db/" directory.
 
     Returns:
-        Tuple[numpy.ndarray, numpy.ndarray]:
+        tuple:
             A tuple containing:
             - x (numpy.ndarray): Array of WiFi signal strengths, with shape (n_samples, n_features).
             - y (numpy.ndarray): Array of corresponding labels, with shape (n_samples,).
@@ -36,53 +35,61 @@ def parse(dataset_file_name: str) -> Tuple[np.ndarray, np.ndarray]:
 
 def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
     """
-    This function builds the decision tree recursively.
-    Params: train: list[list[float]]: The training dataset
-            depth: int: The current depth of the tree
-    """
+    Recursively builds a decision tree using a dataset by identifying optimal splits
+    to classify data. Returns a tree structure consisting of nodes and leaves.
 
+    Args:
+        train (list[list[float]]): Training dataset where each sample is a list of attributes,
+                                   with the last element as the class label.
+        depth (int): Current depth of the tree, used for tracking the tree depth as it builds.
+
+    Returns:
+        tuple:
+            - A root node or leaf node of the decision tree (Node).
+            - An integer representing the depth of the node in the tree.
+    """
+    # Extract class labels (last element in each row)
     class_labels = [row[-1] for row in train]
 
-    # Check if all samples have the same label, return a leaf node if so
+    # Base case: if all samples have the same label, return a leaf node
     if len(np.unique(class_labels)) == 1:
         leaf_node = Node()
         leaf_node.leaf = True
-        leaf_node.val = int(np.unique(class_labels))
+        leaf_node.val = int(np.unique(class_labels)[0])
         leaf_node.attribute = "Leaf"
-        return (leaf_node, depth)
+        return leaf_node, depth
 
-    else:
-        split = find_split(train)  # Find the best attribute and value to split on
+    # Find the best attribute and value to split on
+    split = find_split(train)
 
-        # However if our dataset has only one possible split, and the 2 datapoints of this split have the same attribute value but different class:
-        # This split should not be considered and hence no entropy will be calculated. The "best entropy" value would hence never be updated from 100 (arbitrary value).
-        # We should return a leaf node with the majority label of the remaining datapoints
-        if split["entropy"] == 100:
-            leaf_node = Node()
-            leaf_node.leaf = True
-            unique_classes, counts = np.unique(class_labels, return_counts=True)
-            leaf_node.val = int(unique_classes[np.argmax(counts)])
-            leaf_node.attribute = "Leaf"
-            return (leaf_node, depth)
-        else:
-            node = Node()
-            node.attribute = split["attribute"] + 1
-            node.val = split["value"]
+    # Handle the case where no valid split is found
+    if split["entropy"] == 100:  # Arbitrary value indicating no split improves entropy
+        leaf_node = Node()
+        leaf_node.leaf = True
+        unique_classes, counts = np.unique(class_labels, return_counts=True)
+        leaf_node.val = int(unique_classes[np.argmax(counts)])  # Majority class label
+        leaf_node.attribute = "Leaf"
+        return leaf_node, depth
 
-            left_table = [
-                row for row in train if row[split["attribute"]] <= split["value"]
-            ]
-            right_table = [
-                row for row in train if row[split["attribute"]] > split["value"]
-            ]
+    # Create a decision node for the current split
+    node = Node()
+    node.attribute = split["attribute"] + 1
+    node.val = split["value"]
 
-            left_branch, left_depth = decision_tree_learning(left_table, depth + 1)
-            node.left = left_branch
+    # Split data into left and right branches based on the best split
+    left_table = [row for row in train if row[split["attribute"]] <= split["value"]]
+    right_table = [row for row in train if row[split["attribute"]] > split["value"]]
 
-            right_branch, right_depth = decision_tree_learning(right_table, depth + 1)
-            node.right = right_branch
+    # Recursively build the left and right branches
+    left_branch, left_depth = decision_tree_learning(left_table, depth + 1)
+    node.left = left_branch
 
-            return (node, max(left_depth, right_depth))
+    right_branch, right_depth = decision_tree_learning(right_table, depth + 1)
+    node.right = right_branch
+
+    # Return the node and the maximum depth of the tree
+    return node, max(left_depth, right_depth)
+
 
 
 def find_entropy(dataset: list[list[float]]) -> tuple:
@@ -98,7 +105,7 @@ def find_entropy(dataset: list[list[float]]) -> tuple:
                                      and the last element is the class label.
 
     Returns:
-        tuple: 
+        tuple:
             - The entropy value as a float.
             - The total count of samples as an integer.
     """
@@ -121,17 +128,17 @@ def find_entropy(dataset: list[list[float]]) -> tuple:
     return entropy, count
 
 
-def find_split(dataset: list[list[float]]) -> dict[str, float]:
+def find_split(dataset: list[list[float]]) -> dict:
     """
     Finds the optimal attribute and value to split the dataset based on information gain.
 
     Args:
         dataset (List[List[float]]): The dataset to evaluate for potential splits,
-                                      where each inner list represents a sample 
+                                      where each inner list represents a sample
                                       with features and the last element as the label.
 
     Returns:
-        dict[str, float]:
+        dict:
             A dictionary containing the best split information:
             - "attribute": Index of the attribute used for the split.
             - "value": The value of the attribute at which to split.

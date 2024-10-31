@@ -10,7 +10,7 @@ def K_fold_evaluation(
     data: np.ndarray,
     num_folds: int = 10,
     shuffle: bool = True
-) -> dict[str, np.ndarray]:
+) -> dict:
     '''
     Performs K-fold cross-validation on a dataset using a decision tree.
 
@@ -20,7 +20,7 @@ def K_fold_evaluation(
         shuffle (bool): Whether to shuffle the data before splitting into folds.
 
     Returns:
-        dict[str, np.ndarray]:
+        dict:
             Dictionary containing the following keys:
             - "classification_rate": Average classification rate as a float.
             - "recall": Average recall per class as a NumPy array.
@@ -76,7 +76,7 @@ def K_fold_evaluation(
     }
 
 
-def evaluate(test_data: np.ndarray, tree: Node) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, float]:
+def evaluate(test_data: np.ndarray, tree: Node) -> tuple:
     """
     Evaluates a trained decision tree on a test dataset.
 
@@ -117,7 +117,7 @@ def evaluate(test_data: np.ndarray, tree: Node) -> tuple[np.ndarray, np.ndarray,
     return conf_matrix, recall, precision, F1, classification_rate
 
 
-def calculate_metrics(conf_matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
+def calculate_metrics(conf_matrix: np.ndarray) -> tuple:
     """
     Calculate recall, precision, F1 score, and classification rate from a confusion matrix.
 
