@@ -3,8 +3,14 @@
 '''
 import numpy as np
 from func import decision_tree_learning
+from node_class import Node
+from typing import Tuple
 
-def K_fold_evaluation(data, num_folds=10, shuffle=True):
+def K_fold_evaluation(
+    data: np.ndarray,
+    num_folds: int = 10,
+    shuffle: bool = True
+) -> Tuple[float, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     '''
     Performs K-fold cross-validation on a dataset using a decision tree.
 
@@ -69,7 +75,7 @@ def K_fold_evaluation(data, num_folds=10, shuffle=True):
     }
 
 
-def evaluate(test_data, tree):
+def evaluate(test_data: np.ndarray, tree: Node) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, float]:
     '''
     Evaluates a trained decision tree on a test dataset.
 
@@ -85,7 +91,7 @@ def evaluate(test_data, tree):
             - F1 (numpy.ndarray): Per-class F1 scores.
             - classification_rate (float): Overall accuracy of the tree on the test set.
     '''
-    num_classes = 4  # Assuming 4 classes; adjust if needed
+    num_classes = 4
     conf_matrix = np.zeros((num_classes, num_classes), dtype=int)
 
     # Predict class for each sample in the test set
@@ -110,7 +116,7 @@ def evaluate(test_data, tree):
     return conf_matrix, recall, precision, F1, classification_rate
 
 
-def calculate_metrics(conf_matrix):
+def calculate_metrics(conf_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray, float]:
     '''
     Calculate recall, precision, F1 score, and classification rate from a confusion matrix.
 
