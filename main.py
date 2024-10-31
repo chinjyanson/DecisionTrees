@@ -1,7 +1,7 @@
 import numpy as np
 import func
-import visualisation as vis
-import evaluation as eval
+import visualisation as vs
+import evaluation as ev
 
 def main():
     """
@@ -14,10 +14,10 @@ def main():
 
     # Step 2: Visualise the whole dataset as a decision tree
     tree, depth = func.decision_tree_learning(data, 0)
-    vis.visualise(tree, depth)
+    vs.visualise(tree, depth)
 
    # Step 3: Perform K-fold evaluation on the data
-    results = eval.K_fold_evaluation(data)
+    results = ev.K_fold_evaluation(data)
 
     # Print cross-validation metrics in a structured format
     print("\nCross-Validation Metrics (10-fold):")
