@@ -1,9 +1,10 @@
 import numpy as np
 from node_class import Node
 
-def parse(dataset_file_name):
+def parse(dataset_file_name: str) -> tuple:
     """
     Parse the txt file into wifi components
+    Params: dataset_file_name: str: The name of the dataset file
     """
     x = []
     y = []
@@ -19,19 +20,10 @@ def parse(dataset_file_name):
     return x, y                                                                                                                                                                                                                                                                       
 
 def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
-# arguments: Matrix containing data set and depth variable
     """
-    procedure decision tree learning(training dataset, depth)
-        if all samples have the same label then
-            return (a leaf node with this value, depth)
-        else
-            split← find split(training dataset)
-            node← a new decision tree with root as split value
-            l branch, l depth ← DECISION TREE LEARNING(l dataset, depth+1)
-            r branch, r depth ← DECISION TREE LEARNING(r dataset, depth+1)
-            return (node, max(l depth, r depth))
-        end if  
-    end procedure
+    This function builds the decision tree recursively.
+    Params: train: list[list[float]]: The training dataset
+            depth: int: The current depth of the tree
     """
 
     class_labels = [row[-1] for row in train]
@@ -83,7 +75,7 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
             
             return (node, max(left_depth, right_depth))
 
-def find_entropy(dataset):
+def find_entropy(dataset: list[list[float]]) -> tuple:
     """
     Calculates the entropy of the given dataset.
     """
@@ -100,9 +92,10 @@ def find_entropy(dataset):
     count = len(labels)
     return entropy, count
 
-def find_split(dataset: list[list[float]]):  #calculate Information Gain
+def find_split(dataset: list[list[float]]) -> dict: 
     """
     This function finds the most optimal/highest information gain
+    Params: dataset: list[list[float]]: The dataset to find the split on
     """
     best_split = {"attribute": 100, "value": 100, "entropy": 100}
 

@@ -9,9 +9,10 @@ from node_class import Node
 # Global counter to assign unique IDs
 node_counter = 0
 
-def assign_positions(tree, max_depth=0, x=0, y=0, vertical_dist=1, horizontal_dist=4, depth=0, positions=None, node_ids=None):
+def assign_positions(tree: Node, max_depth: int, x=0, y=0, vertical_dist=1, horizontal_dist=4, depth=0, positions=None, node_ids=None):
     """
     Assign positions to each node dynamically based on the depth of the tree.
+    Params: tree: Class Node, max_depth: int, x: int, y: int, vertical_dist: int, horizontal_dist: int, depth: int, positions: hash, node_ids: hash
     """
     global node_counter  # Access the global node counter
     
@@ -63,7 +64,11 @@ def assign_positions(tree, max_depth=0, x=0, y=0, vertical_dist=1, horizontal_di
 
     return positions, node_ids
 
-def plot_tree(tree, positions, node_ids, depth):
+def plot_tree(tree: Node, positions: hash, node_ids: hash, depth: int)-> None:
+    """
+    Plotting text boxes for each node anda also draw edges between nodes
+    Params: tree: Class Node, positions: hash, node_ids: hash, depth: int
+    """
     fig, ax = plt.subplots(figsize=(5*depth, 2 *depth))  # Increased the size of the plot for better spacing
     # fig, ax = plt.subplots(figsize=(15, 8))
     # Function to plot edges between nodes
@@ -95,8 +100,13 @@ def plot_tree(tree, positions, node_ids, depth):
     
     ax.set_aspect('auto')  # Change aspect to auto for better vertical spacing
     ax.set_axis_off()
-    plt.savefig("tree.png")
+    plt.savefig("WholeDecisionTree.png")
 
-def visualise(tree, depth):
+def visualise(tree: Node, depth: int)-> bool:
+    """
+    Used to wrap the functions to visualise the decision tree in a single function
+    Params: Tree: Class Node, depth: int
+    """
     positions, node_ids = assign_positions(tree, depth)
     plot_tree(tree, positions, node_ids, depth)
+    return True
