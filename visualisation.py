@@ -108,7 +108,8 @@ def plot_tree(tree: Node, positions: dict, node_ids: dict, depth: int) -> None:
         node_ids (dict): A dictionary mapping each node to a unique identifier for plotting.
         depth (int): The current depth of the tree, which affects the size and spacing of the plot.
     """
-    fig, ax = plt.subplots(figsize=(5 * depth, 2 * depth))  # Increased size for better spacing
+    fig, ax = plt.subplots(figsize=(5 * depth, 2 * depth)) # For more zoomed out view
+    # fig, ax = plt.subplots(figsize=(15, 4)) # For more zoomed in view
 
     # Function to plot edges between nodes
     def plot_edges(node: Node, positions: dict, node_ids: dict) -> None:
