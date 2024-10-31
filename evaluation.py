@@ -1,6 +1,7 @@
-'''
+"""
 10-fold cross-validation of a decision tree with performance evaluation.
-'''
+"""
+
 import numpy as np
 from decision_tree import decision_tree_learning
 from node_class import Node
@@ -42,15 +43,15 @@ def K_fold_evaluation(
     for index in range(num_folds):
         # Define current fold as test set; the remaining folds as training set
         test_data = folds[index]
-        train_data = np.concatenate(folds[:index] + folds[index + 1:])
+        train_data = np.concatenate(folds[:index] + folds[index + 1 :])
 
         # Train a decision tree on the training set
-        print('Training decision tree on training folds...')
+        print("Training decision tree on training folds...")
         tree, _ = decision_tree_learning(train_data, 0)
 
         # Evaluate the tree on the test set
         conf_matrix, recall, precision, F1, classification_rate = evaluate(test_data, tree)
-        print('-'*50)
+        print("-" * 50)
 
         # Store metrics for the current fold
         classification_rates.append(classification_rate)
@@ -68,16 +69,16 @@ def K_fold_evaluation(
 
     # Return metrics as a dictionary for clarity
     return {
-        'classification_rate': avg_classification_rate,
-        'recall': avg_recall,
-        'precision': avg_precision,
-        'F1_score': avg_F1,
-        'confusion_matrix': avg_confusion_matrix
+        "classification_rate": avg_classification_rate,
+        "recall": avg_recall,
+        "precision": avg_precision,
+        "F1_score": avg_F1,
+        "confusion_matrix": avg_confusion_matrix,
     }
 
 
 def evaluate(test_data: np.ndarray, tree: Node) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, float]:
-    '''
+    """
     Evaluates a trained decision tree on a test dataset.
 
     Args:
@@ -91,7 +92,7 @@ def evaluate(test_data: np.ndarray, tree: Node) -> Tuple[np.ndarray, np.ndarray,
             - precision (numpy.ndarray): Per-class precision values.
             - F1 (numpy.ndarray): Per-class F1 scores.
             - classification_rate (float): Overall accuracy of the tree on the test set.
-    '''
+    """
     num_classes = 4
     conf_matrix = np.zeros((num_classes, num_classes), dtype=int)
 
@@ -118,7 +119,7 @@ def evaluate(test_data: np.ndarray, tree: Node) -> Tuple[np.ndarray, np.ndarray,
 
 
 def calculate_metrics(conf_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray, float]:
-    '''
+    """
     Calculate recall, precision, F1 score, and classification rate from a confusion matrix.
 
     Args:
@@ -130,7 +131,7 @@ def calculate_metrics(conf_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, 
             - precision (numpy.ndarray): Per-class precision values.
             - F1 (numpy.ndarray): Per-class F1 scores.
             - classification_rate (float): Overall accuracy.
-    '''
+    """
     num_classes = conf_matrix.shape[0]
     recall = np.zeros(num_classes)
     precision = np.zeros(num_classes)
