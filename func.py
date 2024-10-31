@@ -1,6 +1,5 @@
 import numpy as np
 from node_class import Node
-import evaluation as eval
 
 def parse(dataset_file_name):
     """
@@ -39,16 +38,16 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
 
     #Check if we have reached the maximum depth
     #If so, take the majority label of the remaining datapoints
-    if (depth >= 12):
-        leaf_node = Node()
-        leaf_node.leaf = True
-        unique_classes, counts = np.unique(class_labels, return_counts=True)
-        leaf_node.val = int(unique_classes[np.argmax(counts)])
-        leaf_node.attribute = "Leaf"
-        return (leaf_node, depth)
+    # if (depth >= 6):
+    #     leaf_node = Node()
+    #     leaf_node.leaf = True
+    #     unique_classes, counts = np.unique(class_labels, return_counts=True)
+    #     leaf_node.val = int(unique_classes[np.argmax(counts)])
+    #     leaf_node.attribute = "Leaf"
+    #     return (leaf_node, depth)
 
     #Check if all samples have the same label, return a leaf node if so 
-    elif (len(np.unique(class_labels)) == 1):
+    if (len(np.unique(class_labels)) == 1):
         leaf_node = Node()
         leaf_node.leaf = True
         leaf_node.val = int(np.unique(class_labels))
@@ -84,8 +83,6 @@ def decision_tree_learning(train: list[list[float]], depth: int) -> tuple:
             
             return (node, max(left_depth, right_depth))
 
-       
-
 def find_entropy(dataset):
     """
     Calculates the entropy of the given dataset.
@@ -102,7 +99,6 @@ def find_entropy(dataset):
     entropy = entropy_array.sum()
     count = len(labels)
     return entropy, count
-
 
 def find_split(dataset: list[list[float]]):  #calculate Information Gain
     """
@@ -137,7 +133,3 @@ def find_split(dataset: list[list[float]]):  #calculate Information Gain
     #we exit the for loop and return this best_cut tuple
     return best_split
 
-if __name__ == "__main__":
-    data = parse("clean_dataset")
-    x_train, x_test, y_train, y_test = eval.split_dataset(data[:, :-1], data[:, -1], 0.2)
-    dataset = list(zip(x_train, y_train))
