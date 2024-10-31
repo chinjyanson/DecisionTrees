@@ -3,20 +3,23 @@ import func
 import visualisation as vis
 import evaluation as eval
 
+
 def main():
     """
     Main function
     """
     # Step 1: Parse the dataset
-    dataset_name = input("Please enter the name of the dataset file without the .txt suffix: ")
+    dataset_name = input(
+        "Please enter the name of the dataset file without the .txt suffix: "
+    )
     x, y = func.parse(dataset_name)
-    data = np.column_stack((x, y)) # Combine features and labels into one dataset
+    data = np.column_stack((x, y))  # Combine features and labels into one dataset
 
     # Step 2: Visualise the whole dataset as a decision tree
     tree, depth = func.decision_tree_learning(data, 0)
     vis.visualise(tree, depth)
 
-   # Step 3: Perform K-fold evaluation on the data
+    # Step 3: Perform K-fold evaluation on the data
     results = eval.K_fold_evaluation(data)
 
     # Print cross-validation metrics in a structured format
