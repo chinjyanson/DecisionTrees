@@ -16,16 +16,17 @@ def main():
     tree, depth = func.decision_tree_learning(data, 0)
     vis.visualise(tree, depth)
 
-    # Step 3: Perform K-fold evaluation on the data
-    avg_classification_rate, avg_recall, avg_precision, avg_F1, avg_confusion_matrix = eval.K_fold_evaluation(data)
+   # Step 3: Perform K-fold evaluation on the data
+    results = eval.K_fold_evaluation(data)
 
-    # Print cross-validation metrics
-    print("Cross-Validation Metrics (10-fold):")
-    print(f"Average Classification Rate: {avg_classification_rate:.2f}")
-    print(f"Average Recall: {avg_recall}")
-    print(f"Average Precision: {avg_precision}")
-    print(f"Average F1 Score: {avg_F1}")
-    print(f"Average Confusion Matrix:\n{avg_confusion_matrix}")
+    # Print cross-validation metrics in a structured format
+    print("\nCross-Validation Metrics (10-fold):")
+    print(f"Average Classification Rate: {results['classification_rate']:.2f}")
+    print(f"Average Recall per Class: {results['recall']}")
+    print(f"Average Precision per Class: {results['precision']}")
+    print(f"Average F1 Score per Class: {results['F1_score']}")
+    print(f"Average Confusion Matrix:\n{results['confusion_matrix']}")
+
 
 # Run the main function
 if __name__ == "__main__":

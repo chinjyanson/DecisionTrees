@@ -1,117 +1,144 @@
 '''
-10-fold validation of the decision tree
+10-fold cross-validation of a decision tree with performance evaluation.
 '''
-from func import decision_tree_learning
 import numpy as np
+from func import decision_tree_learning
 
-def K_fold_evaluation(data, nr_of_folds=10, shuffle=True):
+def K_fold_evaluation(data, num_folds=10, shuffle=True):
     '''
-    Perform K-fold cross-validation and calculate average performance metrics.
-    Returns: average confusion matrix, recall, precision, F1 score,
-             and classification rate across the K-folds.
+    Performs K-fold cross-validation on a dataset using a decision tree.
+
+    Args:
+        data (numpy.ndarray): The dataset to evaluate, where the last column is the label.
+        num_folds (int): The number of folds to use in cross-validation.
+        shuffle (bool): Whether to shuffle the data before splitting into folds.
+
+    Returns:
+        dict: A dictionary containing average evaluation metrics:
+            - 'classification_rate': Overall classification accuracy.
+            - 'recall': Per-class recall values.
+            - 'precision': Per-class precision values.
+            - 'F1_score': Per-class F1 scores.
+            - 'confusion_matrix': Average confusion matrix.
     '''
     if shuffle:
         np.random.shuffle(data)
 
     # Split data into K folds
-    folds = np.array_split(data, nr_of_folds)
+    folds = np.array_split(data, num_folds)
 
-    # Initialize arrays to store evaluation measures for each fold
-    recall_matrix, precision_matrix, F1_matrix = [], [], []
-    classification_rates, confusion_tensor, trees = [], [], []
+    # Initialize lists to collect evaluation metrics across folds
+    classification_rates = []
+    recall_list, precision_list, F1_list = [], [], []
+    confusion_matrices = []
 
-    for index in range(nr_of_folds):
+    for index in range(num_folds):
+        # Define current fold as test set; the remaining folds as training set
+        test_data = folds[index]
+        train_data = np.concatenate(folds[:index] + folds[index + 1:])
 
-        # Separate current fold as test set, others as training set
-        test_data_set = folds[index]
-        training_data_set = np.concatenate(folds[:index] + folds[index + 1:])
+        # Train a decision tree on the training set
+        print('Training decision tree on training folds...')
+        tree, _ = decision_tree_learning(train_data, 0)
 
-        # Train decision tree on training set
-        print('TRAINING TREE ON REMAINING FOLDS...')
-        tree, _ = decision_tree_learning(training_data_set, 0)
-        trees.append(tree)
+        # Evaluate the tree on the test set
+        conf_matrix, recall, precision, F1, classification_rate = evaluate(test_data, tree)
+        print('-'*50)
 
-        # Evaluate trained tree on the test dataset
-        confusion_matrix, recall, precision, F1, classification_rate = evaluate(test_data_set, tree)
-        print('-'*70)
-
-        # Store evaluation measures
-        confusion_matrix = np.reshape(confusion_matrix, (1, 4, 4))  # Shape for stacking later
+        # Store metrics for the current fold
         classification_rates.append(classification_rate)
+        recall_list.append(recall)
+        precision_list.append(precision)
+        F1_list.append(F1)
+        confusion_matrices.append(conf_matrix)
 
-        if index == 0:
-            recall_matrix, precision_matrix, F1_matrix = recall, precision, F1
-            confusion_tensor = confusion_matrix
-        else:
-            recall_matrix = np.vstack((recall_matrix, recall))
-            precision_matrix = np.vstack((precision_matrix, precision))
-            F1_matrix = np.vstack((F1_matrix, F1))
-            confusion_tensor = np.vstack((confusion_tensor, confusion_matrix))
+    # Calculate average evaluation metrics
+    avg_classification_rate = np.mean(classification_rates)
+    avg_recall = np.mean(recall_list, axis=0)
+    avg_precision = np.mean(precision_list, axis=0)
+    avg_F1 = np.mean(F1_list, axis=0)
+    avg_confusion_matrix = np.mean(confusion_matrices, axis=0)
 
-    # Calculate average of evaluation metrics
-    average_recall = np.mean(recall_matrix, axis=0)
-    average_precision = np.mean(precision_matrix, axis=0)
-    average_F1 = np.mean(F1_matrix, axis=0)
-    average_classification_rate = np.mean(classification_rates)
-    average_confusion_matrix = np.mean(confusion_tensor, axis=0)
-
-    return (average_classification_rate, average_recall, average_precision, average_F1, average_confusion_matrix)
+    # Return metrics as a dictionary for clarity
+    return {
+        'classification_rate': avg_classification_rate,
+        'recall': avg_recall,
+        'precision': avg_precision,
+        'F1_score': avg_F1,
+        'confusion_matrix': avg_confusion_matrix
+    }
 
 
-def evaluate(test_dataset, trained_tree):
-    ''' return: confusion matrix, recall, precision, F1 score, classification rate '''
-    confusion_matrix = np.zeros((4,4), dtype=int)
+def evaluate(test_data, tree):
+    '''
+    Evaluates a trained decision tree on a test dataset.
 
-    # Traverse each sample in the test dataset using the trained tree
-    for sample in test_dataset:
-        current_node = trained_tree
-        attribute_values = sample[:-1]
+    Args:
+        test_data (numpy.ndarray): Test dataset with features and labels.
+        tree (Node): The root node of the trained decision tree.
+
+    Returns:
+        tuple: Evaluation metrics including:
+            - confusion_matrix (numpy.ndarray): Confusion matrix (num_classes x num_classes).
+            - recall (numpy.ndarray): Per-class recall values.
+            - precision (numpy.ndarray): Per-class precision values.
+            - F1 (numpy.ndarray): Per-class F1 scores.
+            - classification_rate (float): Overall accuracy of the tree on the test set.
+    '''
+    num_classes = 4  # Assuming 4 classes; adjust if needed
+    conf_matrix = np.zeros((num_classes, num_classes), dtype=int)
+
+    # Predict class for each sample in the test set
+    for sample in test_data:
+        node = tree
+        features = sample[:-1]
         true_label = int(sample[-1])
 
-        # Traverse the tree until a leaf node is reached
-        while not current_node.leaf:
-            # Go left or right based on the attribute value
-            if attribute_values[current_node.attribute - 1] <= current_node.val:
-                current_node = current_node.left
+        # Traverse tree to make a prediction
+        while not node.leaf:
+            if features[node.attribute - 1] <= node.val:
+                node = node.left
             else:
-                current_node = current_node.right
+                node = node.right
 
-        # At the leaf node, get the predicted label and update confusion matrix
-        predicted_label = int(current_node.val)
-        confusion_matrix[true_label - 1, predicted_label - 1] += 1
+        # Get predicted label at the leaf node and update confusion matrix
+        predicted_label = int(node.val)
+        conf_matrix[true_label - 1, predicted_label - 1] += 1
 
-    # Calculate metrics from the confusion matrix
-    recall, precision, F1, classification_rate = metrics(confusion_matrix)
+    # Calculate recall, precision, F1, and classification rate
+    recall, precision, F1, classification_rate = calculate_metrics(conf_matrix)
+    return conf_matrix, recall, precision, F1, classification_rate
 
-    return confusion_matrix, recall, precision, F1, classification_rate
 
-def metrics(confusion_matrix):
+def calculate_metrics(conf_matrix):
     '''
-    Calculate recall, precision, F1 score, and classification rate from confusion matrix.
-    Returns: arrays of recall, precision, F1 for each class, and overall classification rate.
+    Calculate recall, precision, F1 score, and classification rate from a confusion matrix.
+
+    Args:
+        conf_matrix (numpy.ndarray): Confusion matrix (num_classes x num_classes).
+
+    Returns:
+        tuple: Metrics derived from the confusion matrix:
+            - recall (numpy.ndarray): Per-class recall values.
+            - precision (numpy.ndarray): Per-class precision values.
+            - F1 (numpy.ndarray): Per-class F1 scores.
+            - classification_rate (float): Overall accuracy.
     '''
-    num_classes = confusion_matrix.shape[0]
+    num_classes = conf_matrix.shape[0]
     recall = np.zeros(num_classes)
     precision = np.zeros(num_classes)
     F1 = np.zeros(num_classes)
 
     for label in range(num_classes):
-        # Recall: True Positives / Actual Positives
-        true_positive = confusion_matrix[label, label]
-        actual_positive = np.sum(confusion_matrix[label, :])
-        if actual_positive > 0:
-            recall[label] = true_positive / actual_positive
+        true_positive = conf_matrix[label, label]
+        actual_positive = np.sum(conf_matrix[label, :])
+        predicted_positive = np.sum(conf_matrix[:, label])
 
-        # Precision: True Positives / Predicted Positives
-        predicted_positive = np.sum(confusion_matrix[:, label])
-        if predicted_positive > 0:
-            precision[label] = true_positive / predicted_positive
+        # Calculate recall, precision, and F1 score
+        recall[label] = true_positive / actual_positive if actual_positive > 0 else 0
+        precision[label] = true_positive / predicted_positive if predicted_positive > 0 else 0
+        F1[label] = 2 * (precision[label] * recall[label]) / (precision[label] + recall[label]) if (precision[label] + recall[label]) > 0 else 0
 
-        # F1 Score: Harmonic mean of precision and recall
-        if recall[label] > 0 and precision[label] > 0:
-            F1[label] = 2 * (precision[label] * recall[label]) / (precision[label] + recall[label])
-
-    # Classification rate: sum of True Positives / total samples
-    classification_rate = np.trace(confusion_matrix) / np.sum(confusion_matrix)
-
+    # Classification rate: ratio of correct predictions to total predictions
+    classification_rate = np.trace(conf_matrix) / np.sum(conf_matrix)
     return recall, precision, F1, classification_rate
