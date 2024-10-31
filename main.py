@@ -9,7 +9,8 @@ def main():
     Main function
     """
     # Step 1: Parse the dataset
-    x, y = func.parse("clean_dataset")
+    dataset_name = input("Please enter the name of the dataset file without the .txt suffix: ")
+    x, y = func.parse(dataset_name)
     data = np.column_stack((x, y)) # Combine features and labels into one dataset
 
     # Step 2: Visualise the whole dataset as a decision tree
